@@ -70,6 +70,8 @@ export type AsaasSubPlugin = (
   context: AsaasPluginContext
 ) => AsaasEndpoints;
 
+export type AsaasSubPluginWithHooks = AsaasSubPlugin & { __chargeOptions?: ChargeHooks };
+
 // ── charge() options ───────────────────────────────────────────────────────
 
 /** Options for the `charge()` sub-plugin. Configures lifecycle hooks for PIX charge events. */

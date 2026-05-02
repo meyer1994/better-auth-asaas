@@ -46,9 +46,9 @@ describe("onAfterUserCreate hook", () => {
   let mockClient: ReturnType<typeof createMockAsaasClient>;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     mockClient = createMockAsaasClient();
     vi.mocked(createAsaasClient).mockReturnValue(mockClient);
-    vi.clearAllMocks();
   });
 
   it("creates Asaas customer and saves ID when createCustomerOnSignUp is true", async () => {
@@ -66,7 +66,8 @@ describe("onAfterUserCreate hook", () => {
     const ctx = createMockEndpointContext();
     const hook = plugin.init?.()?.options?.databaseHooks?.user?.create?.after;
 
-    await hook?.(user, ctx as any);
+    expect(hook).toBeDefined();
+    await hook!(user, ctx);
 
     expect(mockClient.request).toHaveBeenCalledWith(
       "/customers",
@@ -95,7 +96,8 @@ describe("onAfterUserCreate hook", () => {
     const ctx = createMockEndpointContext();
     const hook = plugin.init?.()?.options?.databaseHooks?.user?.create?.after;
 
-    await hook?.(user, ctx as any);
+    expect(hook).toBeDefined();
+    await hook!(user, ctx);
 
     expect(onCustomerCreate).toHaveBeenCalledWith({ asaasCustomer, user });
   });
@@ -105,7 +107,8 @@ describe("onAfterUserCreate hook", () => {
     const ctx = createMockEndpointContext();
     const hook = plugin.init?.()?.options?.databaseHooks?.user?.create?.after;
 
-    await hook?.(createMockUser(), ctx as any);
+    expect(hook).toBeDefined();
+    await hook!(createMockUser(), ctx);
 
     expect(mockClient.request).not.toHaveBeenCalled();
   });
@@ -123,7 +126,8 @@ describe("onAfterUserCreate hook", () => {
     const ctx = createMockEndpointContext();
     const hook = plugin.init?.()?.options?.databaseHooks?.user?.create?.after;
 
-    await expect(hook?.(createMockUser(), ctx as any)).resolves.not.toThrow();
+    expect(hook).toBeDefined();
+    await expect(hook!(createMockUser(), ctx)).resolves.not.toThrow();
     expect(ctx.context.logger.error).toHaveBeenCalled();
   });
 });

@@ -1,4 +1,4 @@
-import type { User } from "better-auth";
+import type { GenericEndpointContext, User } from "better-auth";
 import { vi } from "vitest";
 import type { AsaasApiClient, AsaasCustomer } from "../../types";
 
@@ -26,11 +26,10 @@ export const createMockAsaasCustomer = (overrides: Partial<AsaasCustomer> = {}):
   ...overrides,
 });
 
-export const createMockEndpointContext = () => ({
+export const createMockEndpointContext = (): GenericEndpointContext => ({
   context: {
     logger: {
       error: vi.fn(),
-      info: vi.fn(),
     },
     internalAdapter: {
       updateUser: vi.fn().mockResolvedValue(undefined),
@@ -38,4 +37,4 @@ export const createMockEndpointContext = () => ({
     },
   },
   request: new Request("http://localhost:3000/test"),
-});
+} as unknown as GenericEndpointContext);

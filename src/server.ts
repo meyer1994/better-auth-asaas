@@ -7,11 +7,12 @@ import type {
   AsaasOptions,
   AsaasPluginContext,
   AsaasSubPlugin,
+  AsaasSubPluginWithHooks,
 } from "./types";
 
 const buildChargeHooks = (use: AsaasSubPlugin[]) => {
-  for (const plugin of use) {
-    const hooks = (plugin as any).__chargeOptions;
+  for (const plugin of use as AsaasSubPluginWithHooks[]) {
+    const hooks = plugin.__chargeOptions;
     if (hooks) return hooks;
   }
   return {};
