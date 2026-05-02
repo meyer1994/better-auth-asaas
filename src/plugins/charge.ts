@@ -4,6 +4,7 @@ import type {
   AsaasApiClient,
   AsaasEndpoints,
   AsaasPayment,
+  AsaasPaymentList,
   AsaasPixQrCode,
   AsaasPluginContext,
   AsaasSubPluginWithHooks,
@@ -77,7 +78,9 @@ export const charge =
             });
           }
 
-          const payments = await client.request(`/payments?customer=${user.asaasCustomerId}`);
+          const payments = await client.request<AsaasPaymentList>(
+            `/payments?customer=${user.asaasCustomerId}`
+          );
           return ctx.json(payments);
         }
       ),
