@@ -1,5 +1,4 @@
-import type { BetterAuthClientPlugin, User } from "better-auth";
-import type { UnionToIntersection } from "better-auth";
+import type { User } from "better-auth";
 
 // ── Asaas API response shapes ──────────────────────────────────────────────
 
@@ -72,6 +71,7 @@ export type AsaasSubPlugin = (
 
 // ── charge() options ───────────────────────────────────────────────────────
 
+/** Options for the `charge()` sub-plugin. Configures lifecycle hooks for PIX charge events. */
 export interface ChargeOptions extends ChargeHooks {}
 
 // ── webhooks() options ─────────────────────────────────────────────────────
