@@ -62,7 +62,8 @@ export interface AsaasApiClient {
   request<T>(path: string, init?: RequestInit): Promise<T>;
 }
 
-export type AsaasEndpoints = Record<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AsaasEndpoints = Record<string, (inputCtx: any) => Promise<any>>;
 
 export type AsaasSubPlugin = (
   client: AsaasApiClient,
