@@ -17,8 +17,8 @@ const CreateChargeBody = z.object({
 });
 
 export const charge =
-  (chargeOptions: ChargeOptions = {}) =>
-  (client: AsaasApiClient, _context: AsaasPluginContext): AsaasEndpoints => {
+  (chargeOptions: ChargeOptions = {}) => {
+    const plugin = (client: AsaasApiClient, _context: AsaasPluginContext): AsaasEndpoints => {
     const endpoints = {
       createCharge: createAuthEndpoint(
         "/asaas/charge",
@@ -108,7 +108,8 @@ export const charge =
       ),
     };
 
-    (charge as any).__chargeOptions = chargeOptions;
-
     return endpoints;
+    };
+    (plugin as any).__chargeOptions = chargeOptions;
+    return plugin;
   };
