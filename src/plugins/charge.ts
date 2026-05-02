@@ -6,6 +6,7 @@ import type {
   AsaasPayment,
   AsaasPixQrCode,
   AsaasPluginContext,
+  AsaasSubPluginWithHooks,
   ChargeOptions,
 } from "../types";
 
@@ -15,6 +16,8 @@ const CreateChargeBody = z.object({
   description: z.string().max(500).optional(),
   externalReference: z.string().optional(),
 });
+
+type CreateChargeInput = z.infer<typeof CreateChargeBody>;
 
 export const charge =
   (chargeOptions: ChargeOptions = {}) => {
@@ -34,7 +37,7 @@ export const charge =
             });
           }
 
-          const body = ctx.body as { value: number; dueDate: string; description?: string; externalReference?: string };
+          const body = ctx.body as CreateChargeInput;
 
           const payment = await client.request<AsaasPayment>("/payments", {
             method: "POST",
@@ -86,9 +89,8 @@ export const charge =
           const session = await getSessionFromCtx(ctx);
           if (!session) throw new APIError("UNAUTHORIZED");
 
-          const payment = await client.request<AsaasPayment>(
-            `/payments/${(ctx.params as { id: string }).id}`
-          );
+          const { id } = ctx.params as { id: string };
+          const payment = await client.request<AsaasPayment>(`/payments/${id}`);
           return ctx.json(payment);
         }
       ),
@@ -100,9 +102,8 @@ export const charge =
           const session = await getSessionFromCtx(ctx);
           if (!session) throw new APIError("UNAUTHORIZED");
 
-          const pix = await client.request<AsaasPixQrCode>(
-            `/payments/${(ctx.params as { id: string }).id}/pixQrCode`
-          );
+          const { id } = ctx.params as { id: string };
+          const pix = await client.request<AsaasPixQrCode>(`/payments/${id}/pixQrCode`);
           return ctx.json(pix);
         }
       ),
@@ -110,6 +111,6 @@ export const charge =
 
     return endpoints;
     };
-    (plugin as any).__chargeOptions = chargeOptions;
+    (plugin as AsaasSubPluginWithHooks).__chargeOptions = chargeOptions;
     return plugin;
   };
