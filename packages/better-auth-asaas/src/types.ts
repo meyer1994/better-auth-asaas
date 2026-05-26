@@ -39,17 +39,77 @@ export interface AsaasPaymentList {
   data: AsaasPayment[];
 }
 
+export type AsaasPaymentEvent =
+  | "PAYMENT_CREATED"
+  | "PAYMENT_AWAITING_RISK_ANALYSIS"
+  | "PAYMENT_APPROVED_BY_RISK_ANALYSIS"
+  | "PAYMENT_REPROVED_BY_RISK_ANALYSIS"
+  | "PAYMENT_AUTHORIZED"
+  | "PAYMENT_UPDATED"
+  | "PAYMENT_CONFIRMED"
+  | "PAYMENT_RECEIVED"
+  | "PAYMENT_CREDIT_CARD_CAPTURE_REFUSED"
+  | "PAYMENT_ANTICIPATED"
+  | "PAYMENT_OVERDUE"
+  | "PAYMENT_DELETED"
+  | "PAYMENT_RESTORED"
+  | "PAYMENT_REFUNDED"
+  | "PAYMENT_PARTIALLY_REFUNDED"
+  | "PAYMENT_REFUND_IN_PROGRESS"
+  | "PAYMENT_REFUND_DENIED"
+  | "PAYMENT_RECEIVED_IN_CASH_UNDONE"
+  | "PAYMENT_CHARGEBACK_REQUESTED"
+  | "PAYMENT_CHARGEBACK_DISPUTE"
+  | "PAYMENT_AWAITING_CHARGEBACK_REVERSAL"
+  | "PAYMENT_DUNNING_RECEIVED"
+  | "PAYMENT_DUNNING_REQUESTED"
+  | "PAYMENT_BANK_SLIP_CANCELLED"
+  | "PAYMENT_BANK_SLIP_VIEWED"
+  | "PAYMENT_CHECKOUT_VIEWED"
+  | "PAYMENT_SPLIT_CANCELLED"
+  | "PAYMENT_SPLIT_DIVERGENCE_BLOCK"
+  | "PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED";
+
 export interface AsaasWebhookPayload {
-  event: "PAYMENT_RECEIVED" | "PAYMENT_OVERDUE" | "PAYMENT_DELETED" | string;
+  event: AsaasPaymentEvent | (string & {});
   payment: AsaasPayment;
 }
 
 // ── Plugin context shared between sub-plugins ──────────────────────────────
 
+export type ChargeHookPayload = { payment: AsaasPayment; user: User | null };
+export type ChargeHook = (payload: ChargeHookPayload) => Promise<void>;
+
 export interface ChargeHooks {
-  onPaymentReceived?: (payload: { payment: AsaasPayment; user: User | null }) => Promise<void>;
-  onPaymentOverdue?: (payload: { payment: AsaasPayment; user: User | null }) => Promise<void>;
-  onPaymentDeleted?: (payload: { payment: AsaasPayment; user: User | null }) => Promise<void>;
+  onPaymentCreated?: ChargeHook;
+  onPaymentAwaitingRiskAnalysis?: ChargeHook;
+  onPaymentApprovedByRiskAnalysis?: ChargeHook;
+  onPaymentReprovedByRiskAnalysis?: ChargeHook;
+  onPaymentAuthorized?: ChargeHook;
+  onPaymentUpdated?: ChargeHook;
+  onPaymentConfirmed?: ChargeHook;
+  onPaymentReceived?: ChargeHook;
+  onPaymentCreditCardCaptureRefused?: ChargeHook;
+  onPaymentAnticipated?: ChargeHook;
+  onPaymentOverdue?: ChargeHook;
+  onPaymentDeleted?: ChargeHook;
+  onPaymentRestored?: ChargeHook;
+  onPaymentRefunded?: ChargeHook;
+  onPaymentPartiallyRefunded?: ChargeHook;
+  onPaymentRefundInProgress?: ChargeHook;
+  onPaymentRefundDenied?: ChargeHook;
+  onPaymentReceivedInCashUndone?: ChargeHook;
+  onPaymentChargebackRequested?: ChargeHook;
+  onPaymentChargebackDispute?: ChargeHook;
+  onPaymentAwaitingChargebackReversal?: ChargeHook;
+  onPaymentDunningReceived?: ChargeHook;
+  onPaymentDunningRequested?: ChargeHook;
+  onPaymentBankSlipCancelled?: ChargeHook;
+  onPaymentBankSlipViewed?: ChargeHook;
+  onPaymentCheckoutViewed?: ChargeHook;
+  onPaymentSplitCancelled?: ChargeHook;
+  onPaymentSplitDivergenceBlock?: ChargeHook;
+  onPaymentSplitDivergenceBlockFinished?: ChargeHook;
 }
 
 export interface AsaasPluginContext {

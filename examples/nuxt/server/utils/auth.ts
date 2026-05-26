@@ -12,17 +12,6 @@ export const auth = betterAuth({
 
   emailAndPassword: { enabled: true },
 
-  user: {
-    additionalFields: {
-      cpfCnpj: {
-        type: 'string',
-        required: true,
-        input: true
-      }
-      // asaasCustomerId is registered internally by the asaas plugin — do not redeclare here
-    }
-  },
-
   plugins: [
     asaas({
       apiKey: process.env.ASAAS_API_KEY!,

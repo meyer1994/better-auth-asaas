@@ -78,6 +78,11 @@ export const asaas = <O extends AsaasOptions>(options: O) => {
     schema: {
       user: {
         fields: {
+          cpfCnpj: {
+            type: "string" as const,
+            required: true,
+            input: true,
+          },
           asaasCustomerId: {
             type: "string" as const,
             required: false,

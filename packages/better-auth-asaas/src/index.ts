@@ -5,9 +5,12 @@ export type {
   AsaasCustomer,
   AsaasOptions,
   AsaasPayment,
+  AsaasPaymentEvent,
   AsaasPaymentList,
   AsaasPixQrCode,
   AsaasWebhookPayload,
+  ChargeHook,
+  ChargeHookPayload,
   ChargeOptions,
   WebhooksOptions,
 } from "./types";
