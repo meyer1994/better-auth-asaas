@@ -5,6 +5,7 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "example:nuxt": "pnpm --filter better-auth-asaas-example-nuxt",
+    "example:next": "pnpm --filter better-auth-asaas-example-next",
     "lib": "pnpm --filter better-auth-asaas"
   },
   "devDependencies": {
