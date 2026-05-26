@@ -1,12 +1,13 @@
 {
+  "name": "better-auth-asaas-monorepo",
+  "private": true,
   "scripts": {
-    "build": "tsup ./src/index.ts ./src/client.ts --format esm,cjs --dts --clean --sourcemap",
-    "example:nuxt": "pnpm run --filter better-auth-asaas-example-nuxt",
-    "lib": "pnpm run --filter better-auth-asaas"
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "example:nuxt": "pnpm --filter better-auth-asaas-example-nuxt",
+    "lib": "pnpm --filter better-auth-asaas"
   },
   "devDependencies": {
-    "auth": "^1.6.11",
-    "nuxi": "^3.35.2",
     "typescript": "^6.0.3"
   }
 }
