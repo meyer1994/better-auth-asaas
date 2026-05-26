@@ -46,126 +46,125 @@ export const webhooks =
               })
             ).catch(() => null)) ?? null;
 
-          const payload = { payment: body.payment, user };
           switch (body.event) {
             case "PAYMENT_CREATED":
-              console.debug("PAYMENT_CREATED", body.payment);
-              await chargeHooks.onPaymentCreated?.(payload);
+              ctx.context.logger.debug("PAYMENT_CREATED", body.payment);
+              await chargeHooks.onPaymentCreated?.({ payment: body.payment, user });
               break;
             case "PAYMENT_AWAITING_RISK_ANALYSIS":
-              console.debug("PAYMENT_AWAITING_RISK_ANALYSIS", body.payment);
-              await chargeHooks.onPaymentAwaitingRiskAnalysis?.(payload);
+              ctx.context.logger.debug("PAYMENT_AWAITING_RISK_ANALYSIS", body.payment);
+              await chargeHooks.onPaymentAwaitingRiskAnalysis?.({ payment: body.payment, user });
               break;
             case "PAYMENT_APPROVED_BY_RISK_ANALYSIS":
-              console.debug("PAYMENT_APPROVED_BY_RISK_ANALYSIS", body.payment);
-              await chargeHooks.onPaymentApprovedByRiskAnalysis?.(payload);
+              ctx.context.logger.debug("PAYMENT_APPROVED_BY_RISK_ANALYSIS", body.payment);
+              await chargeHooks.onPaymentApprovedByRiskAnalysis?.({ payment: body.payment, user });
               break;
             case "PAYMENT_REPROVED_BY_RISK_ANALYSIS":
-              console.debug("PAYMENT_REPROVED_BY_RISK_ANALYSIS", body.payment);
-              await chargeHooks.onPaymentReprovedByRiskAnalysis?.(payload);
+              ctx.context.logger.debug("PAYMENT_REPROVED_BY_RISK_ANALYSIS", body.payment);
+              await chargeHooks.onPaymentReprovedByRiskAnalysis?.({ payment: body.payment, user });
               break;
             case "PAYMENT_AUTHORIZED":
-              console.debug("PAYMENT_AUTHORIZED", body.payment);
-              await chargeHooks.onPaymentAuthorized?.(payload);
+              ctx.context.logger.debug("PAYMENT_AUTHORIZED", body.payment);
+              await chargeHooks.onPaymentAuthorized?.({ payment: body.payment, user });
               break;
             case "PAYMENT_UPDATED":
-              console.debug("PAYMENT_UPDATED", body.payment);
-              await chargeHooks.onPaymentUpdated?.(payload);
+              ctx.context.logger.debug("PAYMENT_UPDATED", body.payment);
+              await chargeHooks.onPaymentUpdated?.({ payment: body.payment, user });
               break;
             case "PAYMENT_CONFIRMED":
-              console.debug("PAYMENT_CONFIRMED", body.payment);
-              await chargeHooks.onPaymentConfirmed?.(payload);
+              ctx.context.logger.debug("PAYMENT_CONFIRMED", body.payment);
+              await chargeHooks.onPaymentConfirmed?.({ payment: body.payment, user });
               break;
             case "PAYMENT_RECEIVED":
-              console.debug("PAYMENT_RECEIVED", body.payment);
-              await chargeHooks.onPaymentReceived?.(payload);
+              ctx.context.logger.debug("PAYMENT_RECEIVED", body.payment);
+              await chargeHooks.onPaymentReceived?.({ payment: body.payment, user });
               break;
             case "PAYMENT_CREDIT_CARD_CAPTURE_REFUSED":
-              console.debug("PAYMENT_CREDIT_CARD_CAPTURE_REFUSED", body.payment);
-              await chargeHooks.onPaymentCreditCardCaptureRefused?.(payload);
+              ctx.context.logger.debug("PAYMENT_CREDIT_CARD_CAPTURE_REFUSED", body.payment);
+              await chargeHooks.onPaymentCreditCardCaptureRefused?.({ payment: body.payment, user });
               break;
             case "PAYMENT_ANTICIPATED":
-              console.debug("PAYMENT_ANTICIPATED", body.payment);
-              await chargeHooks.onPaymentAnticipated?.(payload);
+              ctx.context.logger.debug("PAYMENT_ANTICIPATED", body.payment);
+              await chargeHooks.onPaymentAnticipated?.({ payment: body.payment, user });
               break;
             case "PAYMENT_OVERDUE":
-              console.debug("PAYMENT_OVERDUE", body.payment);
-              await chargeHooks.onPaymentOverdue?.(payload);
+              ctx.context.logger.debug("PAYMENT_OVERDUE", body.payment);
+              await chargeHooks.onPaymentOverdue?.({ payment: body.payment, user });
               break;
             case "PAYMENT_DELETED":
-              console.debug("PAYMENT_DELETED", body.payment);
-              await chargeHooks.onPaymentDeleted?.(payload);
+              ctx.context.logger.debug("PAYMENT_DELETED", body.payment);
+              await chargeHooks.onPaymentDeleted?.({ payment: body.payment, user });
               break;
             case "PAYMENT_RESTORED":
-              console.debug("PAYMENT_RESTORED", body.payment);
-              await chargeHooks.onPaymentRestored?.(payload);
+              ctx.context.logger.debug("PAYMENT_RESTORED", body.payment);
+              await chargeHooks.onPaymentRestored?.({ payment: body.payment, user });
               break;
             case "PAYMENT_REFUNDED":
-              console.debug("PAYMENT_REFUNDED", body.payment);
-              await chargeHooks.onPaymentRefunded?.(payload);
+              ctx.context.logger.debug("PAYMENT_REFUNDED", body.payment);
+              await chargeHooks.onPaymentRefunded?.({ payment: body.payment, user });
               break;
             case "PAYMENT_PARTIALLY_REFUNDED":
-              console.debug("PAYMENT_PARTIALLY_REFUNDED", body.payment);
-              await chargeHooks.onPaymentPartiallyRefunded?.(payload);
+              ctx.context.logger.debug("PAYMENT_PARTIALLY_REFUNDED", body.payment);
+              await chargeHooks.onPaymentPartiallyRefunded?.({ payment: body.payment, user });
               break;
             case "PAYMENT_REFUND_IN_PROGRESS":
-              console.debug("PAYMENT_REFUND_IN_PROGRESS", body.payment);
-              await chargeHooks.onPaymentRefundInProgress?.(payload);
+              ctx.context.logger.debug("PAYMENT_REFUND_IN_PROGRESS", body.payment);
+              await chargeHooks.onPaymentRefundInProgress?.({ payment: body.payment, user });
               break;
             case "PAYMENT_REFUND_DENIED":
-              console.debug("PAYMENT_REFUND_DENIED", body.payment);
-              await chargeHooks.onPaymentRefundDenied?.(payload);
+              ctx.context.logger.debug("PAYMENT_REFUND_DENIED", body.payment);
+              await chargeHooks.onPaymentRefundDenied?.({ payment: body.payment, user });
               break;
             case "PAYMENT_RECEIVED_IN_CASH_UNDONE":
-              console.debug("PAYMENT_RECEIVED_IN_CASH_UNDONE", body.payment);
-              await chargeHooks.onPaymentReceivedInCashUndone?.(payload);
+              ctx.context.logger.debug("PAYMENT_RECEIVED_IN_CASH_UNDONE", body.payment);
+              await chargeHooks.onPaymentReceivedInCashUndone?.({ payment: body.payment, user });
               break;
             case "PAYMENT_CHARGEBACK_REQUESTED":
-              console.debug("PAYMENT_CHARGEBACK_REQUESTED", body.payment);
-              await chargeHooks.onPaymentChargebackRequested?.(payload);
+              ctx.context.logger.debug("PAYMENT_CHARGEBACK_REQUESTED", body.payment);
+              await chargeHooks.onPaymentChargebackRequested?.({ payment: body.payment, user });
               break;
             case "PAYMENT_CHARGEBACK_DISPUTE":
-              console.debug("PAYMENT_CHARGEBACK_DISPUTE", body.payment);
-              await chargeHooks.onPaymentChargebackDispute?.(payload);
+              ctx.context.logger.debug("PAYMENT_CHARGEBACK_DISPUTE", body.payment);
+              await chargeHooks.onPaymentChargebackDispute?.({ payment: body.payment, user });
               break;
             case "PAYMENT_AWAITING_CHARGEBACK_REVERSAL":
-              console.debug("PAYMENT_AWAITING_CHARGEBACK_REVERSAL", body.payment);
-              await chargeHooks.onPaymentAwaitingChargebackReversal?.(payload);
+              ctx.context.logger.debug("PAYMENT_AWAITING_CHARGEBACK_REVERSAL", body.payment);
+              await chargeHooks.onPaymentAwaitingChargebackReversal?.({ payment: body.payment, user });
               break;
             case "PAYMENT_DUNNING_RECEIVED":
-              console.debug("PAYMENT_DUNNING_RECEIVED", body.payment);
-              await chargeHooks.onPaymentDunningReceived?.(payload);
+              ctx.context.logger.debug("PAYMENT_DUNNING_RECEIVED", body.payment);
+              await chargeHooks.onPaymentDunningReceived?.({ payment: body.payment, user });
               break;
             case "PAYMENT_DUNNING_REQUESTED":
-              console.debug("PAYMENT_DUNNING_REQUESTED", body.payment);
-              await chargeHooks.onPaymentDunningRequested?.(payload);
+              ctx.context.logger.debug("PAYMENT_DUNNING_REQUESTED", body.payment);
+              await chargeHooks.onPaymentDunningRequested?.({ payment: body.payment, user });
               break;
             case "PAYMENT_BANK_SLIP_CANCELLED":
-              console.debug("PAYMENT_BANK_SLIP_CANCELLED", body.payment);
-              await chargeHooks.onPaymentBankSlipCancelled?.(payload);
+              ctx.context.logger.debug("PAYMENT_BANK_SLIP_CANCELLED", body.payment);
+              await chargeHooks.onPaymentBankSlipCancelled?.({ payment: body.payment, user });
               break;
             case "PAYMENT_BANK_SLIP_VIEWED":
-              console.debug("PAYMENT_BANK_SLIP_VIEWED", body.payment);
-              await chargeHooks.onPaymentBankSlipViewed?.(payload);
+              ctx.context.logger.debug("PAYMENT_BANK_SLIP_VIEWED", body.payment);
+              await chargeHooks.onPaymentBankSlipViewed?.({ payment: body.payment, user });
               break;
             case "PAYMENT_CHECKOUT_VIEWED":
-              console.debug("PAYMENT_CHECKOUT_VIEWED", body.payment);
-              await chargeHooks.onPaymentCheckoutViewed?.(payload);
+              ctx.context.logger.debug("PAYMENT_CHECKOUT_VIEWED", body.payment);
+              await chargeHooks.onPaymentCheckoutViewed?.({ payment: body.payment, user });
               break;
             case "PAYMENT_SPLIT_CANCELLED":
-              console.debug("PAYMENT_SPLIT_CANCELLED", body.payment);
-              await chargeHooks.onPaymentSplitCancelled?.(payload);
+              ctx.context.logger.debug("PAYMENT_SPLIT_CANCELLED", body.payment);
+              await chargeHooks.onPaymentSplitCancelled?.({ payment: body.payment, user });
               break;
             case "PAYMENT_SPLIT_DIVERGENCE_BLOCK":
-              console.debug("PAYMENT_SPLIT_DIVERGENCE_BLOCK", body.payment);
-              await chargeHooks.onPaymentSplitDivergenceBlock?.(payload);
+              ctx.context.logger.debug("PAYMENT_SPLIT_DIVERGENCE_BLOCK", body.payment);
+              await chargeHooks.onPaymentSplitDivergenceBlock?.({ payment: body.payment, user });
               break;
             case "PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED":
-              console.debug("PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED", body.payment);
-              await chargeHooks.onPaymentSplitDivergenceBlockFinished?.(payload);
+              ctx.context.logger.debug("PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED", body.payment);
+              await chargeHooks.onPaymentSplitDivergenceBlockFinished?.({ payment: body.payment, user });
               break;
             default:
-              console.debug("UNKNOWN_EVENT", body.event);
+              ctx.context.logger.debug("UNKNOWN_EVENT", body.event);
               break;
           }
 

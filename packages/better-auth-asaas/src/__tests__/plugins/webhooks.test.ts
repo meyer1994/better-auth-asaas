@@ -28,6 +28,15 @@ const mockPayment: AsaasPayment = {
   dateCreated: "2026-05-02",
 };
 
+const makeEnvelope = (event: string, payment: AsaasPayment): AsaasWebhookPayload =>
+  ({
+    id: "evt_test",
+    event,
+    dateCreated: "2026-05-02 10:00:00",
+    account: { id: "acc_test", ownerId: null },
+    payment,
+  }) as AsaasWebhookPayload;
+
 const makeCtx = (
   body: AsaasWebhookPayload,
   token: string,
@@ -39,7 +48,7 @@ const makeCtx = (
     body: JSON.stringify(body),
   }),
   context: {
-    logger: { error: vi.fn() },
+    logger: { error: vi.fn(), debug: vi.fn() },
     internalAdapter,
   },
   json: vi.fn((data: unknown) => data),
@@ -66,7 +75,7 @@ describe("webhooks plugin", () => {
     const context: AsaasPluginContext = { chargeHooks: {} };
     const endpoints = plugin(mockClient, context) as any;
 
-    const ctx = makeCtx({ event: "PAYMENT_RECEIVED", payment: mockPayment }, "wrong-token");
+    const ctx = makeCtx(makeEnvelope("PAYMENT_RECEIVED", mockPayment), "wrong-token");
 
     await expect(endpoints.asaasWebhooks.handler(ctx)).rejects.toThrow(APIError);
   });
@@ -81,7 +90,7 @@ describe("webhooks plugin", () => {
       chargeHooks: { onPaymentReceived },
     };
     const endpoints = plugin(mockClient, context) as any;
-    const ctx = makeCtx({ event: "PAYMENT_RECEIVED", payment: mockPayment }, validToken, {
+    const ctx = makeCtx(makeEnvelope("PAYMENT_RECEIVED", mockPayment), validToken, {
       findOne,
     });
 
@@ -102,7 +111,7 @@ describe("webhooks plugin", () => {
     const plugin = webhooks({ accessToken: validToken });
     const context: AsaasPluginContext = { chargeHooks: { onPaymentOverdue } };
     const endpoints = plugin(mockClient, context) as any;
-    const ctx = makeCtx({ event: "PAYMENT_OVERDUE", payment: mockPayment }, validToken, {
+    const ctx = makeCtx(makeEnvelope("PAYMENT_OVERDUE", mockPayment), validToken, {
       findOne: vi.fn().mockResolvedValue(null),
     });
 
@@ -116,7 +125,7 @@ describe("webhooks plugin", () => {
     const plugin = webhooks({ accessToken: validToken });
     const context: AsaasPluginContext = { chargeHooks: { onPaymentDeleted } };
     const endpoints = plugin(mockClient, context) as any;
-    const ctx = makeCtx({ event: "PAYMENT_DELETED", payment: mockPayment }, validToken, {
+    const ctx = makeCtx(makeEnvelope("PAYMENT_DELETED", mockPayment), validToken, {
       findOne: vi.fn().mockResolvedValue(null),
     });
 
@@ -130,7 +139,7 @@ describe("webhooks plugin", () => {
     const plugin = webhooks({ accessToken: validToken });
     const context: AsaasPluginContext = { chargeHooks: { onPaymentReceived } };
     const endpoints = plugin(mockClient, context) as any;
-    const ctx = makeCtx({ event: "UNKNOWN_EVENT", payment: mockPayment }, validToken, {
+    const ctx = makeCtx(makeEnvelope("UNKNOWN_EVENT", mockPayment), validToken, {
       findOne: vi.fn(),
     });
 
