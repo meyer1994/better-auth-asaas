@@ -18,7 +18,7 @@ export const createAsaasClient = (apiKey: string, sandbox: boolean): AsaasApiCli
       });
 
       if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
+        const body = await response.json().catch(e => console.error(e));
         throw new Error(`Asaas API error: ${response.status} - ${JSON.stringify(body)}`);
       }
 

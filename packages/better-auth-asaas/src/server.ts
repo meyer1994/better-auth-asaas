@@ -21,7 +21,8 @@ const buildChargeHooks = (use: AsaasSubPlugin[]) => {
 const onAfterUserCreate =
   (options: AsaasOptions, client: ReturnType<typeof createAsaasClient>) =>
   async (user: User, context: GenericEndpointContext | null) => {
-    if (!context || !options.createCustomerOnSignUp) return;
+    if (!context) return;
+    if (!options.createCustomerOnSignUp) return;
 
     try {
       const params = options.getCustomerCreateParams

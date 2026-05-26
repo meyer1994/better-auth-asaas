@@ -1,63 +1,12 @@
 {
-  "name": "better-auth-asaas",
-  "version": "0.1.0",
-  "description": "Asaas payment integration for Better Auth",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./client": {
-      "import": {
-        "types": "./dist/client.d.ts",
-        "default": "./dist/client.js"
-      },
-      "require": {
-        "types": "./dist/client.d.cts",
-        "default": "./dist/client.cjs"
-      }
-    }
-  },
-  "type": "module",
   "scripts": {
     "build": "tsup ./src/index.ts ./src/client.ts --format esm,cjs --dts --clean --sourcemap",
-    "dev": "pnpm build --watch",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "asaas",
-    "better-auth",
-    "payments",
-    "pix",
-    "brazil"
-  ],
-  "peerDependencies": {
-    "better-auth": ">=1.0.0",
-    "zod": "^3.25.0 || ^4.0.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": ["better-sqlite3", "esbuild", "@parcel/watcher", "unrs-resolver"]
+    "example:nuxt": "pnpm run --filter better-auth-asaas-example-nuxt",
+    "lib": "pnpm run --filter better-auth-asaas"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "better-auth": "^1.6.9",
-    "tsup": "^8.5.1",
-    "typescript": "^6.0.3",
-    "vite": "^6.4.2",
-    "vitest": "^4.1.5",
-    "zod": "^4.4.2"
+    "auth": "^1.6.11",
+    "nuxi": "^3.35.2",
+    "typescript": "^6.0.3"
   }
 }

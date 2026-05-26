@@ -1,3 +1,5 @@
+.claude/
+.playwright-mcp/
 .worktrees/
 node_modules/
 dist/

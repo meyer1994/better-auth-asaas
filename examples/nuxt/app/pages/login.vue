@@ -10,7 +10,7 @@ const error = ref<string | null>(null)
 
 // ── Login ──────────────────────────────────────────────────────────────────
 const loginSchema = z.object({
-  email: z.string().email('E-mail inválido'),
+  email: z.email('E-mail inválido'),
   password: z.string().min(8, 'Mínimo 8 caracteres')
 })
 type LoginSchema = z.output<typeof loginSchema>
@@ -30,7 +30,7 @@ async function onLogin(event: FormSubmitEvent<LoginSchema>) {
 // ── Register ───────────────────────────────────────────────────────────────
 const registerSchema = z.object({
   name: z.string().min(2, 'Nome muito curto'),
-  email: z.string().email('E-mail inválido'),
+  email: z.email('E-mail inválido'),
   cpfCnpj: z.string().min(11, 'CPF/CNPJ inválido').max(14),
   password: z.string().min(8, 'Mínimo 8 caracteres')
 })
@@ -46,7 +46,7 @@ async function onRegister(event: FormSubmitEvent<RegisterSchema>) {
     name: event.data.name,
     email: event.data.email,
     password: event.data.password,
-    data: { cpfCnpj: event.data.cpfCnpj }
+    cpfCnpj: event.data.cpfCnpj,
   })
   if (err) { error.value = err.message ?? 'Erro ao criar conta.'; return }
   await navigateTo('/')

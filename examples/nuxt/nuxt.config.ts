@@ -12,6 +12,15 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2024-07-11',
 
+  vite: {
+    server: {
+      allowedHosts: ['dev.jmeyer.dev']
+    },
+    optimizeDeps: {
+      include: ['zod', 'better-auth/client', 'better-auth/client/plugins']
+    }
+  },
+
   eslint: {
     config: {
       stylistic: {

@@ -2,12 +2,13 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import { asaas, charge, webhooks } from 'better-auth-asaas'
 import { db } from '../db'
+import * as schema from '../db/schema'
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
 
-  database: drizzleAdapter(db, { provider: 'sqlite' }),
+  database: drizzleAdapter(db, { provider: 'sqlite', schema, debugLogs: true }),
 
   emailAndPassword: { enabled: true },
 
@@ -36,13 +37,13 @@ export const auth = betterAuth({
       use: [
         charge({
           onPaymentReceived: async ({ payment, user }) => {
-            console.log('[webhook] PAYMENT_RECEIVED', payment.id, user?.email)
+            console.info('[webhook] PAYMENT_RECEIVED', payment.id, user)
           },
           onPaymentOverdue: async ({ payment, user }) => {
-            console.log('[webhook] PAYMENT_OVERDUE', payment.id, user?.email)
+            console.info('[webhook] PAYMENT_OVERDUE', payment.id, user)
           },
           onPaymentDeleted: async ({ payment, user }) => {
-            console.log('[webhook] PAYMENT_DELETED', payment.id, user?.email)
+            console.info('[webhook] PAYMENT_DELETED', payment.id, user)
           }
         }),
         webhooks({
