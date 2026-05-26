@@ -24,7 +24,8 @@ export const auth = betterAuth({
         console.log('[asaas] customer created', asaasCustomer.id, 'for user', user.email)
       },
       use: [
-        charge({
+        charge(),
+        webhooks({
           onPaymentReceived: async ({ payment, user }) => {
             console.info('[webhook] PAYMENT_RECEIVED', payment.id, user)
           },
@@ -34,9 +35,6 @@ export const auth = betterAuth({
           onPaymentDeleted: async ({ payment, user }) => {
             console.info('[webhook] PAYMENT_DELETED', payment.id, user)
           }
-        }),
-        webhooks({
-          accessToken: process.env.ASAAS_WEBHOOK_ACCESS_TOKEN!
         })
       ]
     })

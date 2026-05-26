@@ -37,6 +37,5 @@ export type {
   AsaasWebhookPayload,
   ChargeHook,
   ChargeHookPayload,
-  ChargeOptions,
   WebhooksOptions,
 } from "./types";

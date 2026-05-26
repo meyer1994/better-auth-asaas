@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { charge } from "../../plugins/charge";
-import type { AsaasPluginContext } from "../../types";
 import { createMockAsaasClient, createMockUser } from "../utils/mocks";
 
 vi.mock("better-auth/api", () => ({
@@ -17,8 +16,6 @@ vi.mock("better-auth/api", () => ({
 }));
 
 import { APIError, createAuthEndpoint, getSessionFromCtx } from "better-auth/api";
-
-const mockContext: AsaasPluginContext = { chargeHooks: {} };
 
 const createMockCtx = (user: ReturnType<typeof createMockUser> & { asaasCustomerId?: string }) => ({
   body: {},
@@ -42,7 +39,7 @@ describe("charge plugin", () => {
 
   it("registers createCharge, listCharges, getCharge, getChargePixQrCode endpoints", () => {
     const plugin = charge();
-    const endpoints = plugin(mockClient, mockContext);
+    const endpoints = plugin(mockClient);
 
     expect(endpoints).toHaveProperty("createCharge");
     expect(endpoints).toHaveProperty("listCharges");
@@ -78,7 +75,7 @@ describe("charge plugin", () => {
         .mockResolvedValueOnce(pixQr);
 
       const plugin = charge();
-      const endpoints = plugin(mockClient, mockContext) as any;
+      const endpoints = plugin(mockClient) as any;
       const ctx = {
         ...createMockCtx(user),
         body: { value: 99.9, dueDate: "2026-05-10", description: "Pro plan" },
@@ -108,7 +105,7 @@ describe("charge plugin", () => {
       vi.mocked(getSessionFromCtx).mockResolvedValueOnce({ user, session: {} as any });
 
       const plugin = charge();
-      const endpoints = plugin(mockClient, mockContext) as any;
+      const endpoints = plugin(mockClient) as any;
       const ctx = {
         ...createMockCtx(user),
         body: { value: 99.9, dueDate: "2026-05-10" },
@@ -121,7 +118,7 @@ describe("charge plugin", () => {
       vi.mocked(getSessionFromCtx).mockResolvedValueOnce(null);
 
       const plugin = charge();
-      const endpoints = plugin(mockClient, mockContext) as any;
+      const endpoints = plugin(mockClient) as any;
       const ctx = { ...createMockCtx(createMockUser()), body: { value: 99.9, dueDate: "2026-05-10" } };
 
       await expect(endpoints.createCharge.handler(ctx)).rejects.toThrow(APIError);
@@ -137,7 +134,7 @@ describe("charge plugin", () => {
       vi.mocked(mockClient.request).mockResolvedValueOnce(paymentList);
 
       const plugin = charge();
-      const endpoints = plugin(mockClient, mockContext) as any;
+      const endpoints = plugin(mockClient) as any;
       const ctx = createMockCtx(user);
 
       await endpoints.listCharges.handler(ctx);
@@ -156,7 +153,7 @@ describe("charge plugin", () => {
       vi.mocked(mockClient.request).mockResolvedValueOnce(payment);
 
       const plugin = charge();
-      const endpoints = plugin(mockClient, mockContext) as any;
+      const endpoints = plugin(mockClient) as any;
       const ctx = { ...createMockCtx(user), params: { id: "pay_1" } };
 
       await endpoints.getCharge.handler(ctx);
@@ -175,7 +172,7 @@ describe("charge plugin", () => {
       vi.mocked(mockClient.request).mockResolvedValueOnce(pix);
 
       const plugin = charge();
-      const endpoints = plugin(mockClient, mockContext) as any;
+      const endpoints = plugin(mockClient) as any;
       const ctx = { ...createMockCtx(user), params: { id: "pay_1" } };
 
       await endpoints.getChargePixQrCode.handler(ctx);

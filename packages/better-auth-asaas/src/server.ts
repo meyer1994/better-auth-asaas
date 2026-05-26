@@ -5,18 +5,7 @@ import type {
   AsaasCustomer,
   AsaasEndpoints,
   AsaasOptions,
-  AsaasPluginContext,
-  AsaasSubPlugin,
-  AsaasSubPluginWithHooks,
 } from "./types";
-
-const buildChargeHooks = (use: AsaasSubPlugin[]) => {
-  for (const plugin of use as AsaasSubPluginWithHooks[]) {
-    const hooks = plugin.__chargeOptions;
-    if (hooks) return hooks;
-  }
-  return {};
-};
 
 const onAfterUserCreate =
   (options: AsaasOptions, client: ReturnType<typeof createAsaasClient>) =>
@@ -65,12 +54,8 @@ export const asaas = <O extends AsaasOptions>(options: O) => {
   const client = createAsaasClient(options.apiKey, options.sandbox ?? false);
   const use = options.use ?? [];
 
-  const pluginContext: AsaasPluginContext = {
-    chargeHooks: buildChargeHooks(use),
-  };
-
   const endpoints = use
-    .map((plugin) => plugin(client, pluginContext))
+    .map((plugin) => plugin(client))
     .reduce((acc, endpoints) => Object.assign(acc, endpoints), {} as AsaasEndpoints);
 
   return {

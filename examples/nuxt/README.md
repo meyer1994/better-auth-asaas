@@ -1,73 +1,65 @@
 # better-auth-asaas — Nuxt example
 
-A working Nuxt 4 + Nuxt UI app showing all `better-auth-asaas` features:
-
-- Email/password sign-up → Asaas customer created automatically
-- Create PIX charges
-- List and view charges with QR code
-- Webhook endpoint for payment events
+Nuxt 4 + Nuxt UI app demoing every `better-auth-asaas` feature: sign-up with auto Asaas customer creation, PIX charge creation, charge listing/details with QR code, and the webhook receiver.
 
 ## Prerequisites
 
-- Node.js 18+
-- pnpm
+- Node 18+, pnpm
 - [Asaas sandbox account](https://sandbox.asaas.com) + API key
 
 ## Setup
 
-1. **Install and build from the repo root:**
+```bash
+# from repo root
+pnpm install
+pnpm build                       # build the plugin first
 
-   ```bash
-   pnpm install
-   pnpm build      # builds better-auth-asaas before the example can use it
-   ```
+cd examples/nuxt
+cp .env.example .env             # fill in the values below
+pnpm db:push                     # create the SQLite schema
+pnpm dev                         # http://localhost:3000
+```
 
-2. **Configure environment variables:**
+### `.env`
 
-   ```bash
-   cp .env.example .env
-   # edit .env and fill in ASAAS_API_KEY, ASAAS_WEBHOOK_ACCESS_TOKEN, BETTER_AUTH_SECRET
-   ```
+| Variable                    | Description                                              |
+| --------------------------- | -------------------------------------------------------- |
+| `ASAAS_API_KEY`             | Asaas sandbox API key.                                   |
+| `ASAAS_SANDBOX`             | `true` to use the sandbox base URL.                      |
+| `ASAAS_WEBHOOK_ACCESS_TOKEN`| Shared secret; must match the value in the Asaas dashboard. |
+| `BETTER_AUTH_SECRET`        | Random 32-char string.                                   |
+| `BETTER_AUTH_URL`           | `http://localhost:3000` for local dev.                   |
 
-3. **Push the database schema:**
+## Commands
 
-   ```bash
-   pnpm db:push
-   ```
+| Script            | Description                |
+| ----------------- | -------------------------- |
+| `pnpm dev`        | Start Nuxt dev server      |
+| `pnpm build`      | Production build           |
+| `pnpm preview`    | Preview the build          |
+| `pnpm typecheck`  | Run `nuxt typecheck`       |
+| `pnpm db:push`    | Apply schema via drizzle-kit |
 
-4. **Start the dev server:**
+## Webhook (local)
 
-   ```bash
-   pnpm dev
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000). Register an account — an Asaas
-   customer is created automatically using the CPF/CNPJ you provide.
-
-## Webhook (local development)
-
-Asaas needs to reach your app over the internet to deliver webhook events.
-Use a tunnel tool to expose the local server:
+Expose the dev server with a tunnel so Asaas can reach it:
 
 ```bash
-# ngrok
 ngrok http 3000
-
-# cloudflared
+# or
 cloudflared tunnel --url http://localhost:3000
 ```
 
-Then in the [Asaas dashboard](https://sandbox.asaas.com) → **Configurações → Webhooks**:
+In Asaas → **Configurações → Webhooks**:
 
-- URL: `https://<your-tunnel-url>/api/auth/asaas/webhook`
-- Access token: the value of `ASAAS_WEBHOOK_ACCESS_TOKEN` in your `.env`
+- URL: `https://<tunnel>/api/auth/asaas/webhook`
+- Access token: value of `ASAAS_WEBHOOK_ACCESS_TOKEN`
 
-Events `PAYMENT_RECEIVED`, `PAYMENT_OVERDUE`, and `PAYMENT_DELETED` are logged to
-the dev server console via the hooks configured in `server/utils/auth.ts`.
+`PAYMENT_RECEIVED`, `PAYMENT_OVERDUE`, `PAYMENT_DELETED` are logged from `server/utils/auth.ts`.
 
 ## Keyboard shortcuts
 
-| Shortcut | Action |
-|----------|--------|
+| Shortcut | Action             |
+| -------- | ------------------ |
 | `g h`    | Go to charges list |
-| `g n`    | Go to new charge |
+| `g n`    | Go to new charge   |

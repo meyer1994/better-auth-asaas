@@ -3,7 +3,6 @@ import { APIError, createAuthEndpoint } from "better-auth/api";
 import type {
   AsaasApiClient,
   AsaasEndpoints,
-  AsaasPluginContext,
   AsaasWebhookPayload,
   WebhooksOptions,
 } from "../types";
@@ -17,7 +16,10 @@ type UserLookupAdapter = {
 
 export const webhooks =
   (webhooksOptions: WebhooksOptions) =>
-  (_client: AsaasApiClient, context: AsaasPluginContext): AsaasEndpoints => {
+  (_client: AsaasApiClient): AsaasEndpoints => {
+    const { accessToken: accessTokenOption, ...chargeHooks } = webhooksOptions;
+    const accessToken = accessTokenOption ?? process.env.ASAAS_WEBHOOK_ACCESS_TOKEN;
+
     return {
       asaasWebhooks: createAuthEndpoint(
         "/asaas/webhook",
@@ -28,14 +30,14 @@ export const webhooks =
         },
         async (ctx) => {
           const token = ctx.request?.headers.get("asaas-access-token");
-          if (token !== webhooksOptions.accessToken) {
+
+          if (!accessToken || token !== accessToken) {
             throw new APIError("UNAUTHORIZED", {
               message: "Invalid webhook access token",
             });
           }
 
           const body = (await ctx.request?.json()) as AsaasWebhookPayload;
-          const { chargeHooks } = context;
 
           const internalAdapter = ctx.context.internalAdapter as UserLookupAdapter;
           const user =

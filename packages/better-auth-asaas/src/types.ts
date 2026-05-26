@@ -396,10 +396,6 @@ export interface ChargeHooks {
   onPaymentSplitDivergenceBlockFinished?: ChargeHook;
 }
 
-export interface AsaasPluginContext {
-  chargeHooks: ChargeHooks;
-}
-
 // ── Sub-plugin types ───────────────────────────────────────────────────────
 
 export interface AsaasApiClient {
@@ -409,23 +405,16 @@ export interface AsaasApiClient {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AsaasEndpoints = Record<string, (inputCtx: any) => Promise<any>>;
 
-export type AsaasSubPlugin = (
-  client: AsaasApiClient,
-  context: AsaasPluginContext
-) => AsaasEndpoints;
-
-export type AsaasSubPluginWithHooks = AsaasSubPlugin & { __chargeOptions?: ChargeHooks };
-
-// ── charge() options ───────────────────────────────────────────────────────
-
-/** Options for the `charge()` sub-plugin. Configures lifecycle hooks for PIX charge events. */
-export interface ChargeOptions extends ChargeHooks {}
+export type AsaasSubPlugin = (client: AsaasApiClient) => AsaasEndpoints;
 
 // ── webhooks() options ─────────────────────────────────────────────────────
 
-export interface WebhooksOptions {
-  /** The access token Asaas sends in the `asaas-access-token` header. */
-  accessToken: string;
+export interface WebhooksOptions extends ChargeHooks {
+  /**
+   * The access token Asaas sends in the `asaas-access-token` header.
+   * Defaults to `process.env.ASAAS_WEBHOOK_ACCESS_TOKEN`.
+   */
+  accessToken?: string;
 }
 
 // ── Main asaas() options ───────────────────────────────────────────────────
