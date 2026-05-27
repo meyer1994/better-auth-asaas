@@ -1,9 +1,9 @@
 import type { BetterAuthClientPlugin } from "better-auth/client";
-import type { asaas } from "./server";
+import type { asaas as asaasServer } from "./server";
 
-export const asaasClient = () => {
+export const asaas = () => {
   return {
-    id: "asaas-client",
-    $InferServerPlugin: {} as ReturnType<typeof asaas>,
+    id: "asaas" as const,
+    $InferServerPlugin: {} as ReturnType<typeof asaasServer>,
   } satisfies BetterAuthClientPlugin;
 };

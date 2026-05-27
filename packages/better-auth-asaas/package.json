@@ -1,60 +1,39 @@
 {
   "name": "better-auth-asaas",
-  "version": "0.1.0",
-  "description": "Asaas payment integration for Better Auth",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./client": {
-      "import": {
-        "types": "./dist/client.d.ts",
-        "default": "./dist/client.js"
-      },
-      "require": {
-        "types": "./dist/client.d.cts",
-        "default": "./dist/client.cjs"
-      }
-    }
-  },
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "keywords": [],
+  "license": "ISC",
   "type": "module",
   "scripts": {
-    "build": "tsup ./src/index.ts ./src/client.ts --format esm,cjs --dts --clean --sourcemap",
-    "dev": "pnpm build --watch",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf node_modules dist",
+    "test": "vitest run"
   },
   "files": [
     "dist"
   ],
-  "keywords": [
-    "asaas",
-    "better-auth",
-    "payments",
-    "pix",
-    "brazil"
-  ],
-  "peerDependencies": {
-    "better-auth": ">=1.0.0",
-    "zod": "^3.25.0 || ^4.0.0"
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    }
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "better-auth": "^1.6.9",
+    "better-auth": "^1.6.11",
+    "better-call": "^2.0.3",
     "tsup": "^8.5.1",
-    "typescript": "^6.0.3",
-    "vite": "^6.4.2",
-    "vitest": "^4.1.5",
-    "zod": "^4.4.2"
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "better-auth": "^1.6.11",
+    "better-call": "^2.0.3",
+    "zod": "^4.4.3"
   }
 }
