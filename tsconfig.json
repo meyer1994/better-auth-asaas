@@ -1,7 +1,14 @@
 {
-    "files": [],
-    "references": [
-      { "path": "./examples/nuxt/tsconfig.json" },
-      { "path": "./packages/better-auth-asaas/tsconfig.json" }
-    ]
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/better-auth-asaas/tsconfig.json"
+    },
+    {
+      "path": "./examples/nuxt/tsconfig.json"
+    },
+    {
+      "path": "./examples/next/tsconfig.json"
+    }
+  ]
 }
