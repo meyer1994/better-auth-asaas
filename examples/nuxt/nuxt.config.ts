@@ -1,32 +1,27 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/eslint',
-    '@nuxt/ui',
-    '@vueuse/nuxt'
-  ],
+  modules: ['@nuxt/eslint', '@vueuse/nuxt', '@nuxt/ui'],
 
   devtools: { enabled: true },
 
   css: ['~/assets/css/main.css'],
 
-  compatibilityDate: '2024-07-11',
+  compatibilityDate: '2026-05-26',
 
   vite: {
     server: {
-      allowedHosts: ['dev.jmeyer.dev']
+      allowedHosts: ['dev.jmeyer.dev'],
     },
     optimizeDeps: {
-      include: ['zod', 'better-auth/client', 'better-auth/client/plugins']
-    }
+      include: [
+        'better-auth/client',
+        'better-auth/vue',
+        'zod',
+      ],
+    },
   },
 
   eslint: {
-    config: {
-      stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
-    }
-  }
+    config: { stylistic: true },
+  },
 })

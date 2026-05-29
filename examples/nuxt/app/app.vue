@@ -1,28 +1,46 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
-const color = computed(() => colorMode.value === 'dark' ? '#1b1718' : 'white')
+import { useAuth, useSession } from '~/composables/auth'
+import type { NavigationMenuItem } from '@nuxt/ui'
 
-useHead({
-  meta: [
-    { charset: 'utf-8' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { key: 'theme-color', name: 'theme-color', content: color }
-  ],
-  link: [{ rel: 'icon', href: '/favicon.ico' }],
-  htmlAttrs: { lang: 'pt-BR' }
-})
+const auth = useAuth()
+const { data: session, clear } = await useSession()
 
-useSeoMeta({
-  title: 'better-auth-asaas example',
-  description: 'Nuxt example for better-auth-asaas: PIX charges with Better Auth.'
+const items = computed<NavigationMenuItem[]>(() => {
+  if (!session.value?.user) {
+    return [
+      { label: 'Login', to: '/login', icon: 'i-lucide-log-in' },
+      { label: 'Register', to: '/register', icon: 'i-lucide-user-plus' },
+    ]
+  }
+
+  if (session.value?.user) {
+    return [
+      { label: 'Payments', to: '/payments', icon: 'i-lucide-credit-card' },
+      {
+        label: 'Logout',
+        icon: 'i-lucide-log-out',
+        onSelect: async () => {
+          const { error, data } = await auth.signOut()
+          if (error) console.error(error)
+          if (data?.success) clear()
+          if (data?.success) await navigateTo('/login', { replace: true })
+        },
+      },
+    ]
+  }
+
+  throw new Error('Invalid session')
 })
 </script>
 
 <template>
   <UApp>
-    <NuxtLoadingIndicator />
-    <NuxtLayout>
+    <UHeader>
+      <UNavigationMenu :items="items" />
+    </UHeader>
+
+    <UMain class="p-8">
       <NuxtPage />
-    </NuxtLayout>
+    </UMain>
   </UApp>
 </template>

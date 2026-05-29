@@ -6,33 +6,39 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
+    "clean": "rm -rf node_modules .nuxt .output",
+    "lint": "eslint .",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "db:push": "drizzle-kit push"
+    "auth:generate": "pnpx auth generate --yes --config server/utils/auth.ts --output server/db/auth.ts",
+    "db:push": "drizzle-kit push",
+    "db:generate": "pnpm auth:generate && drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",
-    "@iconify-json/lucide": "^1.2.104",
-    "@iconify-json/simple-icons": "^1.2.80",
-    "@nuxt/ui": "^4.7.0",
+    "@iconify-json/lucide": "^1.2.109",
+    "@iconify-json/simple-icons": "^1.2.83",
+    "@nuxt/ui": "^4.8.0",
+    "@nuxtjs/tailwindcss": "6.14.0",
     "@tanstack/table-core": "^8.21.3",
-    "@vueuse/core": "^14.2.1",
-    "@vueuse/nuxt": "^14.2.1",
-    "better-auth": "^1.6.9",
+    "@vueuse/core": "^14.3.0",
+    "@vueuse/nuxt": "^14.3.0",
+    "better-auth": "^1.6.11",
     "better-auth-asaas": "workspace:*",
     "better-sqlite3": "latest",
     "drizzle-orm": "latest",
-    "nuxt": "^4.4.2",
-    "tailwindcss": "^4.2.4",
-    "vue": "^3.5.33",
-    "zod": "^4.3.6"
+    "nuxt": "^4.4.6",
+    "tailwindcss": "^4.3.0",
+    "vue": "^3.5.34",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
     "@types/better-sqlite3": "latest",
     "drizzle-kit": "latest",
-    "eslint": "^10.2.1",
+    "eslint": "^10.4.0",
     "typescript": "^6.0.3",
-    "vue-tsc": "^3.2.7"
+    "vue-tsc": "^3.3.2"
   }
 }
