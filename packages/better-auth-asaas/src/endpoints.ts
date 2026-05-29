@@ -1,8 +1,8 @@
 import { createAuthEndpoint } from "@better-auth/core/api";
 import { sessionMiddleware } from "better-auth/api";
 import * as z from "zod";
-import type { AsaasClient, Page, Payment } from "./asaas";
-import { APIError } from "@better-auth/core/error";
+import type { AsaasClient } from "./asaas";
+import type { Page, Payment, PixQrCode } from "./types";
 
 export const PaymentBillingTypeSchema = z.enum([
   "UNDEFINED",
@@ -60,13 +60,19 @@ export const CreatePaymentInputSchema = z.object({
 });
 
 export const createPayment = (client: AsaasClient) => createAuthEndpoint(
-  "/asaas/payments/create",
+  "/asaas/payments/create" as const,
   {
-    method: "POST",
-    body: CreatePaymentInputSchema,
+    method: "POST" as const,
+    body: z.object({
+      customer: z.string(),
+      billingType: z.enum(["PIX", /* "BOLETO", "CREDIT_CARD", "UNDEFINED" */]),
+      value: z.number().positive(),
+      dueDate: z.string(),
+      description: z.string().max(256).optional(),
+    }),
     use: [sessionMiddleware],
   },
-  async (ctx) => {
+  async (ctx): Promise<Payment> => {
     const response = await client.request<Payment>("/payments", {
       method: "POST",
       body: JSON.stringify({
@@ -79,13 +85,26 @@ export const createPayment = (client: AsaasClient) => createAuthEndpoint(
 );
 
 export const listPayments = (client: AsaasClient) => createAuthEndpoint(
-  "/asaas/payments/list",
+  "/asaas/payments/list" as const,
   {
-    method: "GET",
+    method: "GET" as const,
     use: [sessionMiddleware],
   },
-  async (ctx) => {
+  async (ctx): Promise<Page<Payment>> => {
     const response = await client.request<Page<Payment>>(`/payments`);
+    return ctx.json(response);
+  }
+);
+
+export const getQrCode = (client: AsaasClient) => createAuthEndpoint(
+  "/asaas/payments/qr" as const,
+  {
+    method: "GET" as const,
+    query: z.object({ id: z.string() }),
+    use: [sessionMiddleware],
+  },
+  async (ctx): Promise<PixQrCode> => {
+    const response = await client.request<PixQrCode>(`/payments/${ctx.query.id}/pixQrCode`);
     return ctx.json(response);
   }
 );

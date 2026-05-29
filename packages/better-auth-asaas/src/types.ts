@@ -152,6 +152,13 @@ export type CreatePayment = {
   pixAutomaticAuthorizationId?: string;
 };
 
+export type PixQrCode = {
+  success: boolean;
+  encodedImage: string;
+  payload: string;
+  expirationDate: string;
+};
+
 export type Page<T> = {
   object: "list";
   hasMore: boolean;

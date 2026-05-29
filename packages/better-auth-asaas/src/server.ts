@@ -1,6 +1,6 @@
-import type { BetterAuthPlugin } from "better-auth";
+import type { BetterAuthPlugin, EndpointBaseOptions, EndpointOptions, StrictEndpoint } from "better-auth";
 import { AsaasClient } from "./asaas";
-import { createPayment, listPayments } from "./endpoints";
+import { createPayment, getQrCode, listPayments } from "./endpoints";
 import { userAfterCreate } from "./hooks";
 
 
@@ -18,6 +18,7 @@ export const asaas = <O extends Options>(options: O) => {
     endpoints: {
       createpayment: createPayment(client),
       listpayments: listPayments(client),
+      qrPayment: getQrCode(client),
     },
 
     init: () => ({

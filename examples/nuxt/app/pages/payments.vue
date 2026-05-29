@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
+import { UseClipboard } from '@vueuse/components'
+import type { Payment } from 'better-auth-asaas/types'
 import { z } from 'zod'
 import { useAuth } from '~/composables/auth'
-import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
-import type { Page, Payment } from 'better-auth-asaas/types'
 
 const auth = useAuth()
 const toast = useToast()
@@ -21,8 +22,17 @@ const state = reactive<z.infer<typeof schema>>({
   description: 'Test payment',
 })
 
+const columns: TableColumn<Payment>[] = [
+  { accessorKey: 'id', header: 'ID' },
+  { accessorKey: 'value', header: 'Value' },
+  { accessorKey: 'dueDate', header: 'Due date' },
+  { accessorKey: 'billingType', header: 'Billing type' },
+  { accessorKey: 'description', header: 'Description' },
+  { id: 'actions', header: 'Actions' },
+]
+
 const [
-  { data: session, refresh: refreshSession, status: sessionStatus, error: sessionError },
+  { data: session, refresh: refreshSession, status: sessionStatus },
   { data: payments, refresh: refreshPayments, status: paymentsStatus, error: paymentsError },
 ] = await Promise.all([
   useSession(),
@@ -134,8 +144,62 @@ const [
 
       <UTable
         :loading="paymentsStatus === 'pending'"
+        :columns="columns"
         :data="payments?.data ?? []"
-      />
+      >
+        <template #actions-cell="{ row }">
+          <UModal>
+            <UButton
+              icon="i-lucide-qr-code"
+              variant="ghost"
+            />
+            <template #content>
+              <AsyncData
+                v-slot="{ data }"
+                :fetch-key="['payment', row.original.id, 'qr']"
+                :handler="async () => {
+                  const { data, error } = await auth.asaas.payments.qr({ query: { id: row.original.id } })
+                  if (error) throw error
+                  return data
+                }"
+              >
+                <UCard
+                  title="QR"
+                  :ui="{ body: 'flex flex-col items-center justify-center gap-4' }"
+                >
+                  <NuxtImg
+                    v-if="data"
+                    :src="`data:image/png;base64,${data.encodedImage}`"
+                    width="256"
+                    height="256"
+                  />
+
+                  <UseClipboard v-slot="{ copy }">
+                    <UFieldGroup>
+                      <UButton
+                        label="PIX"
+                        icon="i-lucide-copy"
+                        class="cursor-pointer"
+                        @click="() => {
+                          if (!data?.payload) return
+                          copy(data.payload)
+                          toast.add({ title: 'Copied to clipboard', duration: 1000 })
+                        }"
+                      />
+                      <UInput
+                        type="text"
+                        disabled
+                        :title="data?.payload"
+                        :value="data?.payload"
+                      />
+                    </UFieldGroup>
+                  </UseClipboard>
+                </UCard>
+              </AsyncData>
+            </template>
+          </UModal>
+        </template>
+      </UTable>
     </UCard>
   </div>
 </template>

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev:nuxt": "pnpm --parallel --filter better-auth-asaas-example-nuxt --filter better-auth-asaas dev"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
@@ -12,6 +13,6 @@
     "typescript": "^6.0.3",
     "vite": "^6.4.2",
     "vitest": "^4.1.5",
-    "zod": "^4.4.2"
+    "zod": "^4.4.3"
   }
 }
