@@ -1,22 +1,20 @@
-const URL_SANDBOX = "https://api-sandbox.asaas.com/v3";
-const URL_PRODUCTION = "https://api.asaas.com/v3";
+export const URL_SANDBOX = "https://api-sandbox.asaas.com/v3";
+export const URL_PRODUCTION = "https://api.asaas.com/v3";
 
-type Options = {
+type AsaasClientOptions = {
   apiKey: string;
   sandbox?: boolean;
 };
 
-export class Client {
+export class AsaasClient {
   private apiKey: string;
   private baseUrl: string;
-  private sandbox: boolean;
 
-  constructor(options: Options) {
+  constructor(options: AsaasClientOptions) {
     this.apiKey = options.apiKey;
     this.baseUrl = options.sandbox ? URL_SANDBOX : URL_PRODUCTION;
-    this.sandbox = options.sandbox ?? false;
   }
-  
+
   async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const headers = new Headers(init.headers);
     headers.set("access_token", this.apiKey);

@@ -17,7 +17,7 @@ export const requireAsaasCustomerId = createAuthMiddleware(async ctx => {
     message: `${user.email} does not have assaasCustomerId`,
   });
 
-  ctx.context.logger.info(
+  ctx.context.logger.debug(
     'User has Asaas customer ID',
     { email: user.email, asaasCustomerId: user.asaasCustomerId }
   );
