@@ -6,8 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:generate": "pnpm auth:generate && drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "auth:generate": "pnpx @better-auth/cli generate --yes --config src/lib/auth.ts --output src/lib/db/auth.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",
@@ -17,6 +21,8 @@
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.2",
+    "@tanstack/react-query": "^5.100.14",
+    "@tanstack/react-query-devtools": "^5.100.14",
     "better-auth": "^1.6.9",
     "better-auth-asaas": "workspace:*",
     "better-sqlite3": "latest",
