@@ -44,6 +44,7 @@ pnpm run dev                     # http://localhost:3000
 
 ## Commands
 
+<<<<<<< HEAD
 | Script                   | Description                                      |
 | ------------------------ | ------------------------------------------------ |
 | `pnpm run dev`           | Start Next dev server                            |
@@ -55,6 +56,17 @@ pnpm run dev                     # http://localhost:3000
 | `pnpm run db:generate`   | Regenerate auth tables + drizzle migration files |
 | `pnpm run db:migrate`    | Run drizzle migrations                           |
 | `pnpm run auth:generate` | Regenerate `src/lib/db/auth.ts` from auth config |
+=======
+| Script               | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| `pnpm dev`           | Start Next dev server                                |
+| `pnpm build`         | Production build                                     |
+| `pnpm start`         | Run the production build                             |
+| `pnpm typecheck`     | Run `tsc --noEmit`                                   |
+| `pnpm lint`          | Run ESLint                                           |
+| `pnpm db:push`       | Apply the schema to SQLite via drizzle-kit           |
+| `pnpm auth:generate` | Regenerate `src/lib/db/auth.ts` from auth config     |
+>>>>>>> bca77fa (examples/next: drop drizzle migrate workflow, push-only)
 
 ## Webhook (local)
 
