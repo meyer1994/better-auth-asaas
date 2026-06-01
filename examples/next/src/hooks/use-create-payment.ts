@@ -19,7 +19,6 @@ export function useCreatePayment() {
       // server-side with the session's asaasCustomerId. Pass empty placeholder.
       const { data, error } = await authClient.asaas.payments.create({
         ...input,
-        customer: '',
       })
       if (error) throw error
       return data
