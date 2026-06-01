@@ -9,7 +9,9 @@
     "example:nuxt": "pnpm --filter better-auth-asaas-example-nuxt",
     "example:next": "pnpm --filter better-auth-asaas-example-next",
     "dev:nuxt": "pnpm run example:nuxt dev",
-    "dev:next": "pnpm run example:next dev"
+    "dev:next": "pnpm run example:next dev",
+    "build:nuxt": "pnpm --filter better-auth-asaas-example-nuxt... build",
+    "build:next": "pnpm --filter better-auth-asaas-example-next... build"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
