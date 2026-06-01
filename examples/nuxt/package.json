@@ -20,7 +20,7 @@
     "@iconify-json/lucide": "^1.2.109",
     "@iconify-json/simple-icons": "^1.2.83",
     "@nuxt/image": "2.0.0",
-    "@nuxt/ui": "^4.8.0",
+    "@nuxt/ui": "^4.8.1",
     "@nuxtjs/tailwindcss": "6.14.0",
     "@tanstack/table-core": "^8.21.3",
     "@vueuse/components": "^14.3.0",
