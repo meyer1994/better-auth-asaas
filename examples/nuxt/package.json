@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",
-    "@iconify-json/lucide": "^1.2.109",
+    "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.83",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.8.0",
