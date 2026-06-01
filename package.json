@@ -4,7 +4,10 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "dev:nuxt": "pnpm --parallel --filter better-auth-asaas-example-nuxt --filter better-auth-asaas dev"
+    "example:nuxt": "pnpm --filter better-auth-asaas-example-nuxt",
+    "example:next": "pnpm --filter better-auth-asaas-example-next",
+    "dev:nuxt": "pnpm run example:nuxt dev",
+    "dev:next": "pnpm run example:next dev"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

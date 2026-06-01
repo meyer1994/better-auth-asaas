@@ -64,7 +64,6 @@ export const createPayment = (client: AsaasClient) => createAuthEndpoint(
   {
     method: "POST" as const,
     body: z.object({
-      customer: z.string(),
       billingType: z.enum(["PIX", /* "BOLETO", "CREDIT_CARD", "UNDEFINED" */]),
       value: z.number().positive(),
       dueDate: z.string(),

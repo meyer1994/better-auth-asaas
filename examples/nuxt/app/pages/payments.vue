@@ -11,7 +11,7 @@ const toast = useToast()
 const schema = z.object({
   value: z.number().positive('Must be > 0'),
   dueDate: z.iso.date(),
-  billingType: z.enum(['PIX', 'BOLETO', 'CREDIT_CARD', 'UNDEFINED']).default('PIX'),
+  billingType: z.enum(['PIX']).default('PIX'),
   description: z.string().optional(),
 })
 
@@ -49,12 +49,18 @@ const [
         :state="state"
         class="flex flex-col gap-4"
         @submit.prevent="async (e: FormSubmitEvent<z.infer<typeof schema>>) => {
+          if (!session?.user?.asaasCustomerId) {
+            toast.add({ title: 'Error', description: 'User does not have an Asaas customer ID', color: 'error' })
+            return
+          }
+
           const { data, error } = await auth.asaas.payments.create({
             value: e.data.value,
             dueDate: e.data.dueDate,
             billingType: e.data.billingType,
             description: e.data.description,
           })
+
           if (error) toast.add({ title: 'Error', description: JSON.stringify(error), color: 'error' })
           if (data) toast.add({ title: 'Payment created', description: JSON.stringify(data), color: 'success' })
           if (data) await refreshPayments()

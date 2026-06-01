@@ -1,33 +1,25 @@
 # better-auth-asaas
 
 [Asaas](https://www.asaas.com/) payments plugin for [Better
-Auth](https://www.better-auth.com/): PIX charges, auto-create customers on
-sign-up, and webhook dispatch — no extra tables.
+Auth](https://www.better-auth.com/): PIX/Boleto/Card charges, auto-create
+customers on sign-up, and webhook dispatch — no extra tables.
 
 ## Layout
 
 ```
 packages/better-auth-asaas   # the plugin (server + client)
-examples/nuxt                # Nuxt 4 demo app using all features
+examples/nuxt                # Nuxt 4 demo
+examples/next                # Next 15 demo (WIP)
 ```
 
-## Quick start
+## Commands
 
-```bash
-pnpm install
-pnpm build              # build the plugin
-pnpm example:nuxt dev   # run the Nuxt example
-```
+| Command          | What it does                       |
+| ---------------- | ---------------------------------- |
+| `pnpm build`     | Build the plugin                   |
+| `pnpm test`      | Run vitest                         |
+| `pnpm dev:nuxt`  | Run plugin + Nuxt example in watch |
+| `pnpm dev:next`  | Run plugin + Next example in watch |
 
-## Commands (root)
-
-| Command                   | What it does                                    |
-| ------------------------- | ----------------------------------------------- |
-| `pnpm build`              | Build the plugin (`packages/better-auth-asaas`) |
-| `pnpm lib <cmd>`          | Run a script in the plugin package              |
-| `pnpm example:nuxt <cmd>` | Run a script in the Nuxt example                |
-
-See
-[`packages/better-auth-asaas/README.md`](./packages/better-auth-asaas/README.md)
-for plugin usage and [`examples/nuxt/README.md`](./examples/nuxt/README.md) for
-the demo app.
+See [`examples/nuxt/README.md`](./examples/nuxt/README.md) and
+[`examples/next/README.md`](./examples/next/README.md) for the demo apps.
