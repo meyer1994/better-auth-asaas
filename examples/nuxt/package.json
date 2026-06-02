@@ -10,10 +10,10 @@
     "lint": "eslint .",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "auth:generate": "pnpx auth generate --yes --config server/utils/auth.ts --output server/db/auth.ts",
-    "db:push": "drizzle-kit push",
-    "db:generate": "pnpm auth:generate && drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "auth:generate": "pnpx auth generate --yes --config server/utils/auth.ts --output server/db/auth.ts && pnpm exec eslint --fix server/db/auth.ts",
+    "db:push": "pnpm exec drizzle-kit push",
+    "db:generate": "pnpm run auth:generate && pnpm exec drizzle-kit generate",
+    "db:migrate": "pnpm exec drizzle-kit migrate"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",

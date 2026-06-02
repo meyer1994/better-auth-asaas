@@ -5,6 +5,8 @@ import type { Payment } from 'better-auth-asaas/types'
 import { z } from 'zod'
 import { useAuth } from '~/composables/auth'
 
+definePageMeta({ auth: true })
+
 const auth = useAuth()
 const toast = useToast()
 

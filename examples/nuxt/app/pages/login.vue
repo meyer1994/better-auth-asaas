@@ -29,7 +29,7 @@ const fields: AuthFormField[] = [
           const { error, data } = await auth.signIn.email(event.data)
           if (error) console.error(error)
           if (error) toast.add({ title: 'Sign-in failed', description: error.message, color: 'error' })
-          if (data) await navigateTo('/payments', { replace: true })
+          if (data) await reloadNuxtApp({ path: '/payments' })
         }"
       >
         <template #footer>
