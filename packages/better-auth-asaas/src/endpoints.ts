@@ -2,62 +2,7 @@ import { createAuthEndpoint } from "@better-auth/core/api";
 import { sessionMiddleware } from "better-auth/api";
 import * as z from "zod";
 import type { AsaasClient } from "./asaas";
-import type { Page, Payment, PixQrCode } from "./types";
-
-export const PaymentBillingTypeSchema = z.enum([
-  "UNDEFINED",
-  "BOLETO",
-  "CREDIT_CARD",
-  "PIX",
-]);
-
-export const PaymentDiscountSchema = z.object({
-  value: z.number(),
-  dueDateLimitDays: z.number().int().optional(),
-  type: z.enum(["FIXED", "PERCENTAGE"]).optional(),
-});
-
-export const PaymentInterestSchema = z.object({
-  value: z.number(),
-});
-
-export const PaymentFineSchema = z.object({
-  value: z.number(),
-  type: z.enum(["FIXED", "PERCENTAGE"]).optional(),
-});
-
-export const PaymentSplitSchema = z.object({
-  walletId: z.string(),
-  fixedValue: z.number().optional(),
-  percentualValue: z.number().optional(),
-  totalFixedValue: z.number().optional(),
-  externalReference: z.string().optional(),
-  description: z.string().optional(),
-});
-
-export const PaymentCallbackSchema = z.object({
-  successUrl: z.string().max(255),
-  autoRedirect: z.boolean().optional(),
-});
-
-export const CreatePaymentInputSchema = z.object({
-  billingType: PaymentBillingTypeSchema,
-  value: z.number(),
-  dueDate: z.string(),
-  description: z.string().max(500).optional(),
-  daysAfterDueDateToRegistrationCancellation: z.number().int().optional(),
-  externalReference: z.string().optional(),
-  installmentCount: z.number().int().optional(),
-  totalValue: z.number().optional(),
-  installmentValue: z.number().optional(),
-  discount: PaymentDiscountSchema.optional(),
-  interest: PaymentInterestSchema.optional(),
-  fine: PaymentFineSchema.optional(),
-  postalService: z.boolean().optional(),
-  split: z.array(PaymentSplitSchema).optional(),
-  callback: PaymentCallbackSchema.optional(),
-  pixAutomaticAuthorizationId: z.string().optional(),
-});
+import type { CreateSubscription, Page, Payment, PixQrCode, Subscription } from "./types";
 
 export const createPayment = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/create" as const,
@@ -75,9 +20,56 @@ export const createPayment = (client: AsaasClient) => createAuthEndpoint(
     const response = await client.request<Payment>("/payments", {
       method: "POST",
       body: JSON.stringify({
-        ...ctx.body,
+        value: ctx.body.value,
+        dueDate: ctx.body.dueDate,
+        description: ctx.body.description,
+        billingType: ctx.body.billingType,
+        externalReference: ctx.context.session.user.id,
         customer: ctx.context.session.user.asaasCustomerId,
       }),
+    });
+    return ctx.json(response);
+  }
+);
+
+export const createSubscription = (client: AsaasClient) => createAuthEndpoint(
+  "/asaas/subscriptions/create" as const,
+  {
+    method: "POST" as const,
+    body: z.object({
+      billingType: z.enum(["UNDEFINED", "BOLETO", "CREDIT_CARD", "PIX"]),
+      value: z.number().positive(),
+      nextDueDate: z.string(),
+      cycle: z.enum([
+        "WEEKLY",
+        "BIWEEKLY",
+        "MONTHLY",
+        "BIMONTHLY",
+        "QUARTERLY",
+        "SEMIANNUALLY",
+        "YEARLY",
+      ]),
+      description: z.string().max(500).optional(),
+      endDate: z.string().optional(),
+      maxPayments: z.number().int().positive().optional(),
+      externalReference: z.string().optional(),
+    }),
+    use: [sessionMiddleware],
+  },
+  async (ctx): Promise<Subscription> => {
+    const response = await client.request<Subscription>("/subscriptions", {
+      method: "POST",
+      body: JSON.stringify({
+        billingType: ctx.body.billingType,
+        value: ctx.body.value,
+        nextDueDate: ctx.body.nextDueDate,
+        cycle: ctx.body.cycle,
+        description: ctx.body.description,
+        endDate: ctx.body.endDate,
+        maxPayments: ctx.body.maxPayments,
+        externalReference: ctx.body.externalReference ?? ctx.context.session.user.id,
+        customer: ctx.context.session.user.asaasCustomerId,
+      } satisfies CreateSubscription),
     });
     return ctx.json(response);
   }
@@ -91,6 +83,18 @@ export const listPayments = (client: AsaasClient) => createAuthEndpoint(
   },
   async (ctx): Promise<Page<Payment>> => {
     const response = await client.request<Page<Payment>>(`/payments`);
+    return ctx.json(response);
+  }
+);
+
+export const listSubscriptions = (client: AsaasClient) => createAuthEndpoint(
+  "/asaas/subscriptions/list" as const,
+  {
+    method: "GET" as const,
+    use: [sessionMiddleware],
+  },
+  async (ctx): Promise<Page<Subscription>> => {
+    const response = await client.request<Page<Subscription>>(`/subscriptions`);
     return ctx.json(response);
   }
 );

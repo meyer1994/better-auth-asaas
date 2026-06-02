@@ -1,4 +1,3 @@
-
 export type Customer = {
   name: string;
   cpfCnpj: string;
@@ -21,59 +20,76 @@ export type Customer = {
   foreignCustomer?: boolean;
 };
 
+export type PaymentEventType =
+  | "PAYMENT_CREATED"
+  | "PAYMENT_AWAITING_RISK_ANALYSIS"
+  | "PAYMENT_APPROVED_BY_RISK_ANALYSIS"
+  | "PAYMENT_REPROVED_BY_RISK_ANALYSIS"
+  | "PAYMENT_AUTHORIZED"
+  | "PAYMENT_UPDATED"
+  | "PAYMENT_CONFIRMED"
+  | "PAYMENT_RECEIVED"
+  | "PAYMENT_CREDIT_CARD_CAPTURE_REFUSED"
+  | "PAYMENT_ANTICIPATED"
+  | "PAYMENT_OVERDUE"
+  | "PAYMENT_DELETED"
+  | "PAYMENT_RESTORED"
+  | "PAYMENT_REFUNDED"
+  | "PAYMENT_PARTIALLY_REFUNDED"
+  | "PAYMENT_REFUND_IN_PROGRESS"
+  | "PAYMENT_REFUND_DENIED"
+  | "PAYMENT_RECEIVED_IN_CASH_UNDONE"
+  | "PAYMENT_CHARGEBACK_REQUESTED"
+  | "PAYMENT_CHARGEBACK_DISPUTE"
+  | "PAYMENT_AWAITING_CHARGEBACK_REVERSAL"
+  | "PAYMENT_DUNNING_REQUESTED"
+  | "PAYMENT_DUNNING_RECEIVED"
+  | "PAYMENT_BANK_SLIP_CANCELLED"
+  | "PAYMENT_BANK_SLIP_VIEWED"
+  | "PAYMENT_CHECKOUT_VIEWED"
+  | "PAYMENT_SPLIT_DIVERGENCE_BLOCK"
+  | "PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED";
+
+export type SubscriptionEventType =
+  | "SUBSCRIPTION_CREATED"
+  | "SUBSCRIPTION_UPDATED"
+  | "SUBSCRIPTION_INACTIVATED"
+  | "SUBSCRIPTION_DELETED"
+  | "SUBSCRIPTION_SPLIT_DISABLED"
+  | "SUBSCRIPTION_SPLIT_DIVERGENCE_BLOCK"
+  | "SUBSCRIPTION_SPLIT_DIVERGENCE_BLOCK_FINISHED";
+
+export type EventType = PaymentEventType | SubscriptionEventType;
+
+export type Event<T, N extends EventType> = {
+  id: string;
+  event: N;
+  dateCreated: string;
+} & (
+  N extends PaymentEventType
+    ? {
+        payment: T;
+        subscription?: never;
+      }
+    : N extends SubscriptionEventType
+    ? {
+        subscription: T;
+        payment?: never;
+      }
+    : {
+        payment?: never;
+        subscription?: never;
+      }
+);
+
 export type PaymentBillingType =
   | "UNDEFINED"
   | "BOLETO"
   | "CREDIT_CARD"
+  | "DEBIT_CARD"
+  | "TRANSFER"
+  | "DEPOSIT"
   | "PIX";
-
-export type PaymentValueType = "FIXED" | "PERCENTAGE";
-
-export type PaymentDiscount = {
-  value: number;
-  limitDate: string | null;
-  dueDateLimitDays: number;
-  type: PaymentValueType;
-};
-
-export type PaymentInterest = {
-  value: number;
-  type: PaymentValueType;
-};
-
-export type PaymentFine = {
-  value: number;
-  type: PaymentValueType;
-};
-
-export type CreatePaymentDiscount = {
-  value: number;
-  dueDateLimitDays?: number;
-  type?: PaymentValueType;
-};
-
-export type CreatePaymentInterest = {
-  value: number;
-};
-
-export type CreatePaymentFine = {
-  value: number;
-  type?: PaymentValueType;
-};
-
-export type PaymentSplit = {
-  walletId: string;
-  fixedValue?: number;
-  percentualValue?: number;
-  totalFixedValue?: number;
-  externalReference?: string;
-  description?: string;
-};
-
-export type PaymentCallback = {
-  successUrl: string;
-  autoRedirect?: boolean;
-};
 
 export type PaymentStatus =
   | "PENDING"
@@ -84,72 +100,143 @@ export type PaymentStatus =
   | "DELETED"
   | "RESTORED"
   | "REFUND_REQUESTED"
+  | "REFUND_IN_PROGRESS"
+  | "REFUND_DENIED"
   | "CHARGEBACK_REQUESTED"
   | "CHARGEBACK_DISPUTE"
   | "AWAITING_CHARGEBACK_REVERSAL"
   | "DUNNING_REQUESTED"
   | "DUNNING_RECEIVED"
-  | "AWAITING_RISK_ANALYSIS";
+  | "AWAITING_RISK_ANALYSIS"
+  | "RECEIVED_IN_CASH";
+
+export type PaymentDiscount = {
+  value: number;
+  dueDateLimitDays: number;
+  type: "FIXED" | "PERCENTAGE";
+};
+
+export type PaymentFine = {
+  value: number;
+  type: "FIXED" | "PERCENTAGE";
+};
+
+export type PaymentInterest = {
+  value: number;
+  type: "FIXED" | "PERCENTAGE";
+};
+
+export type SubscriptionBillingType =
+  | "UNDEFINED"
+  | "BOLETO"
+  | "CREDIT_CARD"
+  | "DEBIT_CARD"
+  | "TRANSFER"
+  | "DEPOSIT"
+  | "PIX";
+
+export type SubscriptionCycle =
+  | "WEEKLY"
+  | "BIWEEKLY"
+  | "MONTHLY"
+  | "BIMONTHLY"
+  | "QUARTERLY"
+  | "SEMIANNUALLY"
+  | "YEARLY";
+
+export type SubscriptionStatus = "ACTIVE" | "EXPIRED" | "INACTIVE";
+
+export type SubscriptionSplitStatus = "ACTIVE" | "DISABLED";
+
+export type SubscriptionSplitDisabledReason = "WALLET_UNABLE_TO_RECEIVE" | "VALUE_DIVERGENCE";
 
 export type Payment = {
   object: "payment";
   id: string;
   dateCreated: string;
   customer: string;
-  checkoutSession: unknown | null;
-  paymentLink: string | null;
   value: number;
   netValue: number;
   originalValue: number | null;
-  interestValue: number | null;
-  description: string;
+  description?: string;
   billingType: PaymentBillingType;
-  pixTransaction: unknown | null;
-  status: PaymentStatus;
+  pixTransaction?: string | null;
   dueDate: string;
-  originalDueDate: string;
   paymentDate: string | null;
   clientPaymentDate: string | null;
-  installmentNumber: number | null;
-  invoiceUrl: string;
-  invoiceNumber: string;
   externalReference: string | null;
   deleted: boolean;
   anticipated: boolean;
   anticipable: boolean;
-  creditDate: string | null;
-  estimatedCreditDate: string | null;
-  transactionReceiptUrl: string | null;
-  nossoNumero: string | null;
-  bankSlipUrl: string | null;
-  lastInvoiceViewedDate: string | null;
-  lastBankSlipViewedDate: string | null;
-  discount: PaymentDiscount;
-  fine: PaymentFine;
-  interest: PaymentInterest;
-  postalService: boolean;
-  escrow: unknown | null;
-  refunds: unknown | null;
+  lastInvoiceViewedDate?: string | null;
+
+  status: PaymentStatus;
+
+  discount?: PaymentDiscount;
+
+  fine?: PaymentFine;
+
+  interest?: PaymentInterest;
+
+  callback?: {
+    successUrl: string;
+    autoRedirect?: boolean;
+  };
+};
+
+export type Subscription = {
+  object: "subscription";
+  id: string;
+  dateCreated: string;
+  customer: string;
+  paymentLink: string | null;
+  value: number;
+  nextDueDate: string;
+  endDate: string | null;
+  billingType: SubscriptionBillingType;
+  cycle: SubscriptionCycle;
+  description?: string;
+  status: SubscriptionStatus;
+  deleted: boolean;
+  maxPayments?: number;
+  externalReference: string | null;
+  checkoutSession?: string;
+  discount?: PaymentDiscount;
+  fine?: PaymentFine;
+  interest?: PaymentInterest;
+  split?: SubscriptionSplit[];
+};
+
+export type SubscriptionSplit = {
+  walletId: string;
+  fixedValue?: number | null;
+  percentualValue?: number | null;
+  totalValue?: number | null;
+  externalReference?: string | null;
+  description?: string | null;
+  status?: SubscriptionSplitStatus;
+  disabledReason?: SubscriptionSplitDisabledReason;
 };
 
 export type CreatePayment = {
   customer: string;
-  billingType: PaymentBillingType;
+  billingType: "PIX";
   value: number;
   dueDate: string;
   description?: string;
-  daysAfterDueDateToRegistrationCancellation?: number;
   externalReference?: string;
-  installmentCount?: number;
-  totalValue?: number;
-  installmentValue?: number;
-  discount?: CreatePaymentDiscount;
-  interest?: CreatePaymentInterest;
-  fine?: CreatePaymentFine;
-  postalService?: boolean;
-  split?: PaymentSplit[];
-  callback?: PaymentCallback;
-  pixAutomaticAuthorizationId?: string;
+};
+
+export type CreateSubscription = {
+  customer: string;
+  billingType: "UNDEFINED" | "BOLETO" | "CREDIT_CARD" | "PIX";
+  value: number;
+  nextDueDate: string;
+  cycle: SubscriptionCycle;
+  description?: string;
+  endDate?: string;
+  maxPayments?: number;
+  externalReference?: string;
 };
 
 export type PixQrCode = {
@@ -163,7 +250,7 @@ export type Page<T> = {
   object: "list";
   hasMore: boolean;
   totalCount: number;
-  limit: number;   // page size (max 100)
-  offset: number;  // starting index of this page
+  limit: number;
+  offset: number;
   data: T[];
 };

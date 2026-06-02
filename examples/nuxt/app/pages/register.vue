@@ -28,7 +28,7 @@ async function onSubmit(payload: { data: z.infer<typeof schema> }) {
   })
   if (error) console.error(error)
   if (error) toast.add({ title: 'Sign-up failed', description: error.message, color: 'error' })
-  if (data) await navigateTo('/payments', { replace: true })
+  if (data) await reloadNuxtApp({ path: '/payments' })
 }
 </script>
 

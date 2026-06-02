@@ -15,6 +15,7 @@ const items = computed<NavigationMenuItem[]>(() => {
 
   return [
     { label: 'Payments', to: '/payments', icon: 'i-lucide-credit-card' },
+    { label: 'Subscriptions', to: '/subscriptions', icon: 'i-lucide-repeat' },
   ]
 })
 

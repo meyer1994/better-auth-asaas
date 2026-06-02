@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
-import { UseClipboard } from '@vueuse/components'
-import type { Payment } from 'better-auth-asaas/types'
+import type { Subscription } from 'better-auth-asaas/types'
 import { z } from 'zod'
 import { useAuth } from '~/composables/auth'
 
@@ -12,33 +11,36 @@ const toast = useToast()
 
 const schema = z.object({
   value: z.number().positive('Must be > 0'),
-  dueDate: z.iso.date(),
-  billingType: z.enum(['PIX']).default('PIX'),
+  nextDueDate: z.iso.date(),
+  cycle: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'BIMONTHLY', 'QUARTERLY', 'SEMIANNUALLY', 'YEARLY']).default('MONTHLY'),
+  billingType: z.enum(['UNDEFINED', 'BOLETO', 'CREDIT_CARD', 'PIX']).default('PIX'),
   description: z.string().optional(),
 })
 
 const state = reactive<z.infer<typeof schema>>({
   value: 100,
-  dueDate: '2026-06-20',
+  nextDueDate: '2026-06-20',
+  cycle: 'MONTHLY',
   billingType: 'PIX',
-  description: 'Test payment',
+  description: 'Test subscription',
 })
 
-const columns: TableColumn<Payment>[] = [
+const columns: TableColumn<Subscription>[] = [
   { accessorKey: 'id', header: 'ID' },
   { accessorKey: 'value', header: 'Value' },
-  { accessorKey: 'dueDate', header: 'Due date' },
+  { accessorKey: 'nextDueDate', header: 'Next due date' },
+  { accessorKey: 'cycle', header: 'Cycle' },
   { accessorKey: 'billingType', header: 'Billing type' },
+  { accessorKey: 'status', header: 'Status' },
   { accessorKey: 'description', header: 'Description' },
-  { id: 'actions', header: 'Actions' },
 ]
 
 const [
   { data: session, refresh: refreshSession, status: sessionStatus },
-  { data: payments, refresh: refreshPayments, status: paymentsStatus, error: paymentsError },
+  { data: subscriptions, refresh: refreshSubscriptions, status: subscriptionsStatus, error: subscriptionsError },
 ] = await Promise.all([
   useSession(),
-  usePayments(),
+  useSubscriptions(),
 ])
 </script>
 
@@ -56,22 +58,23 @@ const [
             return
           }
 
-          const { data, error } = await auth.asaas.payments.create({
+          const { data, error } = await auth.asaas.subscriptions.create({
             value: e.data.value,
-            dueDate: e.data.dueDate,
+            nextDueDate: e.data.nextDueDate,
+            cycle: e.data.cycle,
             billingType: e.data.billingType,
             description: e.data.description,
           })
 
           if (error) toast.add({ title: 'Error', description: JSON.stringify(error), color: 'error' })
-          if (data) toast.add({ title: 'Payment created', description: JSON.stringify(data), color: 'success' })
-          if (data) await refreshPayments()
+          if (data) toast.add({ title: 'Subscription created', description: JSON.stringify(data), color: 'success' })
+          if (data) await refreshSubscriptions()
         }"
       >
         <UCard>
           <template #title>
             <div class="flex items-center justify-between">
-              Create payment
+              Create subscription
               <UButton
                 type="submit"
                 icon="i-lucide-plus"
@@ -91,12 +94,21 @@ const [
             />
           </UFormField>
           <UFormField
-            label="Due date"
-            name="dueDate"
+            label="Next due date"
+            name="nextDueDate"
           >
             <UInput
-              v-model="state.dueDate"
+              v-model="state.nextDueDate"
               type="date"
+            />
+          </UFormField>
+          <UFormField
+            label="Cycle"
+            name="cycle"
+          >
+            <USelect
+              v-model="state.cycle"
+              :items="['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'BIMONTHLY', 'QUARTERLY', 'SEMIANNUALLY', 'YEARLY']"
             />
           </UFormField>
           <UFormField
@@ -105,8 +117,7 @@ const [
           >
             <USelect
               v-model="state.billingType"
-              default-value="PIX"
-              :items="['PIX', 'BOLETO', 'CREDIT_CARD', 'UNDEFINED']"
+              :items="['UNDEFINED', 'BOLETO', 'CREDIT_CARD', 'PIX']"
             />
           </UFormField>
           <UFormField
@@ -132,82 +143,29 @@ const [
         </template>
 
         <pre v-if="sessionStatus === 'success'">{{ session }}</pre>
-        <pre v-if="paymentsStatus === 'error'">{{ paymentsError }}</pre>
-        <pre v-if="paymentsStatus === 'pending'">Loading...</pre>
+        <pre v-if="subscriptionsStatus === 'error'">{{ subscriptionsError }}</pre>
+        <pre v-if="subscriptionsStatus === 'pending'">Loading...</pre>
       </UCard>
     </div>
 
-    <!-- payments card -->
+    <!-- subscriptions card -->
     <UCard>
       <template #title>
         <div class="flex items-center justify-between">
-          Payments
+          Subscriptions
           <UButton
             icon="i-lucide-refresh-cw"
             variant="ghost"
-            @click="() => refreshPayments()"
+            @click="() => refreshSubscriptions()"
           />
         </div>
       </template>
 
       <UTable
-        :loading="paymentsStatus === 'pending'"
+        :loading="subscriptionsStatus === 'pending'"
         :columns="columns"
-        :data="payments?.data ?? []"
-      >
-        <template #actions-cell="{ row }">
-          <UModal>
-            <UButton
-              icon="i-lucide-qr-code"
-              variant="ghost"
-            />
-            <template #content>
-              <AsyncData
-                v-slot="{ data }"
-                :fetch-key="['payment', 'qr', row.original.id]"
-                :handler="async () => {
-                  const { data, error } = await auth.asaas.payments.qr({ query: { id: row.original.id } })
-                  if (error) throw error
-                  return data
-                }"
-              >
-                <UCard
-                  title="QR"
-                  :ui="{ body: 'flex flex-col items-center justify-center gap-4' }"
-                >
-                  <NuxtImg
-                    v-if="data"
-                    :src="`data:image/png;base64,${data.encodedImage}`"
-                    width="256"
-                    height="256"
-                  />
-
-                  <UseClipboard v-slot="{ copy }">
-                    <UFieldGroup>
-                      <UButton
-                        label="PIX"
-                        icon="i-lucide-copy"
-                        class="cursor-pointer"
-                        @click="() => {
-                          if (!data?.payload) return
-                          copy(data.payload)
-                          toast.add({ title: 'Copied to clipboard', duration: 1000 })
-                        }"
-                      />
-                      <UInput
-                        type="text"
-                        disabled
-                        :title="data?.payload"
-                        :value="data?.payload"
-                      />
-                    </UFieldGroup>
-                  </UseClipboard>
-                </UCard>
-              </AsyncData>
-            </template>
-          </UModal>
-        </template>
-      </UTable>
+        :data="subscriptions?.data ?? []"
+      />
     </UCard>
   </div>
 </template>

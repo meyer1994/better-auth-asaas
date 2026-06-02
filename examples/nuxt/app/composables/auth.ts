@@ -1,5 +1,5 @@
 import { asaasClient } from 'better-auth-asaas/client'
-import type { Page, Payment } from 'better-auth-asaas/types'
+import type { Page, Payment, Subscription } from 'better-auth-asaas/types'
 import { createAuthClient } from 'better-auth/vue'
 
 export const useAuth = () => {
@@ -30,6 +30,18 @@ export const usePayments = () => {
     'payments',
     async () => {
       const { data, error } = await auth.asaas.payments.list()
+      if (error) throw error
+      return data
+    },
+  )
+}
+
+export const useSubscriptions = () => {
+  const auth = useAuth()
+  return useAsyncData<Page<Subscription>>(
+    'subscriptions',
+    async () => {
+      const { data, error } = await auth.asaas.subscriptions.list()
       if (error) throw error
       return data
     },
