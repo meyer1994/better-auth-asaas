@@ -70,6 +70,24 @@ Ignored/generated folders and files such as `node_modules`, `.pnpm-store`, `dist
 from the tracked project shape. Note that `docs/superpowers` files can exist locally
 for planning, but `docs` is ignored by `.gitignore`.
 
+## Finding Files And Text
+
+Prefer `rg` and `rg --files` for normal code searches because they are fast and
+respect ignore files by default. Use the standard shell tools below when `rg` is
+unavailable, when you need POSIX-style behavior, or when combining file discovery
+with content filters.
+
+| Command | Use for |
+| ------- | ------- |
+| `find . -name "*.ts"` | Find files by name or extension. |
+| `find . -type f -path "*/src/*"` | Find files under matching paths. |
+| `grep -rin "pattern" packages/better-auth-asaas/src` | Recursive, case-insensitive text search with line numbers. |
+| `find packages -type f -name "*.ts" -print0 | xargs -0 grep -n "pattern"` | Search only files selected by `find`. |
+| `grep -rin "payment" . | grep "asaasCustomerId"` | Narrow a broad grep result with a second grep. |
+| `tree -a -I "node_modules|dist|.nuxt|.next|.output|.git"` | Quickly inspect directory shape while hiding generated folders. |
+
+Keep searches scoped to relevant directories when possible. Avoid broad searches
+through generated or ignored folders unless the task specifically needs them.
 
 ## MCP Servers
 
@@ -89,11 +107,11 @@ Prefer these MCP sources over web search for project-specific framework/API docs
 
 Root workspace:
 
-| Command                                               | Description                   |
-| ----------------------------------------------------- | ----------------------------- |
-| `pnpm --filter better-auth-asaas <script>`           | Run a plugin package script   |
-| `pnpm --filter better-auth-asaas-example-nuxt <script>` | Run a Nuxt example script     |
-| `pnpm --filter better-auth-asaas-example-next <script>` | Run a Next example script     |
+| Command                                                 | Description                 |
+| ------------------------------------------------------- | --------------------------- |
+| `pnpm --filter better-auth-asaas <script>`              | Run a plugin package script |
+| `pnpm --filter better-auth-asaas-example-nuxt <script>` | Run a Nuxt example script   |
+| `pnpm --filter better-auth-asaas-example-next <script>` | Run a Next example script   |
 
 The root `package.json` currently has no `scripts` block. Use package filters
 instead of root aliases.
