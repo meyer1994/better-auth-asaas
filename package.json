@@ -1,19 +1,12 @@
 {
   "name": "better-auth-asaas-monorepo",
   "private": true,
-  "scripts": {
-    "test": "pnpm run -r test",
-    "clean": "pnpm run -r clean",
-    "build": "pnpm run -r build"
-  },
   "devDependencies": {
     "@openai/codex": "^0.136.0",
     "@types/node": "^25.9.1",
-    "better-auth": "catalog:",
     "eslint": "^10.4.1",
     "typescript": "^6.0.3",
     "vite": "^6.4.3",
-    "vitest": "^4.1.8",
-    "zod": "catalog:"
+    "vitest": "^4.1.8"
   }
 }

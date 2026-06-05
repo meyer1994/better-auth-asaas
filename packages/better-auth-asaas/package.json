@@ -8,7 +8,6 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "lint": "eslint .",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules dist .tsup",
@@ -35,6 +34,7 @@
     "@better-auth/core": "catalog:",
     "better-auth": "catalog:",
     "better-call": "catalog:",
+    "eslint": "^10.4.1",
     "tsup": "^8.5.1",
     "zod": "catalog:"
   },
