@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { createPayment, getQrCode, listPayments } from "./endpoints";
-import type { Page, Payment, PixQrCode } from "./types";
+import {
+  createPayment,
+  createSubscription,
+  getQrCode,
+  listPayments,
+  listSubscriptions,
+} from "./endpoints";
+import type { Page, Payment, PixQrCode, Subscription } from "./types";
 import { AsaasClient } from "./asaas";
 
 const makePayment = () => ( {
@@ -38,6 +44,33 @@ const makePixQrCode = () => ({
   payload: "pix-payload",
   expirationDate: "2026-06-12",
 } as PixQrCode);
+
+const makeSubscription = () => ({
+  object: "subscription",
+  id: "sub_123",
+  dateCreated: "2026-06-05",
+  customer: "cus_123",
+  paymentLink: null,
+  value: 49.9,
+  nextDueDate: "2026-07-05",
+  endDate: "2026-12-05",
+  billingType: "PIX",
+  cycle: "MONTHLY",
+  description: "Monthly plan",
+  status: "ACTIVE",
+  deleted: false,
+  maxPayments: 6,
+  externalReference: "subscription_123",
+} as Subscription);
+
+const makeSubscriptionPage = () => ({
+  object: "list",
+  hasMore: false,
+  totalCount: 1,
+  limit: 10,
+  offset: 0,
+  data: [makeSubscription()],
+} as Page<Subscription>);
 
 const makeSessionContext = () => ({
   context: {
@@ -115,5 +148,81 @@ describe("getQrCode", () => {
 
     expect(result).toEqual(makePixQrCode());
     expect(client.request).toHaveBeenCalledWith("/payments/pay_123/pixQrCode");
+  });
+});
+
+describe("createSubscription", () => {
+  it("creates a subscription with an explicit external reference", async () => {
+    const client = mockClient(makeSubscription());
+    const endpoint = createSubscription(client);
+
+    const result = await endpoint({
+      body: {
+        billingType: "PIX",
+        value: 49.9,
+        nextDueDate: "2026-07-05",
+        cycle: "MONTHLY",
+        description: "Monthly plan",
+        endDate: "2026-12-05",
+        maxPayments: 6,
+        externalReference: "subscription_123",
+      },
+      ...makeSessionContext(),
+    });
+
+    expect(result).toEqual(makeSubscription());
+    expect(client.request).toHaveBeenCalledWith("/subscriptions", {
+      method: "POST",
+      body: JSON.stringify({
+        billingType: "PIX",
+        value: 49.9,
+        nextDueDate: "2026-07-05",
+        cycle: "MONTHLY",
+        description: "Monthly plan",
+        endDate: "2026-12-05",
+        maxPayments: 6,
+        externalReference: "subscription_123",
+        customer: "cus_123",
+      }),
+    });
+  });
+
+  it("defaults the external reference to the authenticated user id", async () => {
+    const client = mockClient(makeSubscription());
+    const endpoint = createSubscription(client);
+
+    await endpoint({
+      body: {
+        billingType: "PIX",
+        value: 49.9,
+        nextDueDate: "2026-07-05",
+        cycle: "MONTHLY",
+      },
+      ...makeSessionContext(),
+    });
+
+    expect(client.request).toHaveBeenCalledWith("/subscriptions", {
+      method: "POST",
+      body: JSON.stringify({
+        billingType: "PIX",
+        value: 49.9,
+        nextDueDate: "2026-07-05",
+        cycle: "MONTHLY",
+        externalReference: "user_123",
+        customer: "cus_123",
+      }),
+    });
+  });
+});
+
+describe("listSubscriptions", () => {
+  it("lists subscriptions for the authenticated user", async () => {
+    const client = mockClient(makeSubscriptionPage());
+    const endpoint = listSubscriptions(client);
+
+    const result = await endpoint(makeSessionContext());
+
+    expect(result).toEqual(makeSubscriptionPage());
+    expect(client.request).toHaveBeenCalledWith("/subscriptions");
   });
 });
