@@ -57,6 +57,14 @@ export const authClient = createAuthClient({
 | `sandbox`   | `boolean`  | Use the sandbox base URL. Default `false`. |
 | `onWebhook` | `function` | Optional handler for any webhook event.    |
 
+Webhook-specific handlers are also supported. Payment handlers include
+`onPaymentCreated`, `onPaymentReceived`, `onPaymentUpdated`,
+`onPaymentConfirmed`, `onPaymentOverdue`, `onPaymentDeleted`, refund,
+chargeback, dunning, bank slip, checkout, split divergence, and risk-analysis
+handlers. Subscription handlers include `onSubscriptionCreated`,
+`onSubscriptionUpdated`, `onSubscriptionInactivated`, `onSubscriptionDeleted`,
+`onSubscriptionSplitDisabled`, and split divergence handlers.
+
 ## Schema
 
 Adds two fields to the `user` table:

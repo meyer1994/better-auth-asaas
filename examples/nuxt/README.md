@@ -31,6 +31,7 @@ pnpm run dev                 # http://localhost:3000
 | `ASAAS_WEBHOOK_ACCESS_TOKEN` | Shared secret; must match the value in the Asaas dashboard. |
 | `BETTER_AUTH_SECRET`         | Random 32-char string.                                      |
 | `BETTER_AUTH_URL`            | `http://localhost:3000` for local dev.                      |
+| `DATABASE_URL`               | SQLite file path, for example `./sqlite.db`.                |
 
 ## Pages
 
