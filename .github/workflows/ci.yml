@@ -21,5 +21,45 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --recursive run test
-      - run: pnpm --recursive run build
+      - run: pnpm --filter better-auth-asaas run build
+      - run: pnpm --filter better-auth-asaas run test
+
+  example-nuxt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter better-auth-asaas run build
+      - run: pnpm --filter better-auth-asaas-example-nuxt run lint
+      - run: pnpm --filter better-auth-asaas-example-nuxt run typecheck
+      - run: pnpm --filter better-auth-asaas-example-nuxt run build
+
+  example-next:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter better-auth-asaas run build
+      - run: pnpm --filter better-auth-asaas-example-next run lint
+      - run: pnpm --filter better-auth-asaas-example-next run typecheck
+      - run: pnpm --filter better-auth-asaas-example-next run build
