@@ -8,11 +8,11 @@ import type { UseQueryResult } from '@tanstack/react-query'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-type SubscriptionsTableProps = {
+type Props = {
   subscriptions: UseQueryResult<Page<Subscription>, Error>
 }
 
-export function SubscriptionsTable({ subscriptions }: SubscriptionsTableProps) {
+export function SubscriptionsTable({ subscriptions }: Props) {
   const columns = useMemo<ColumnDef<Subscription, unknown>[]>(() => [
     { accessorKey: 'id', header: 'ID' },
     { accessorKey: 'value', header: 'Value' },
@@ -25,8 +25,8 @@ export function SubscriptionsTable({ subscriptions }: SubscriptionsTableProps) {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: subscriptions.data?.data ?? [],
     columns,
+    data: subscriptions.data?.data || [],
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -59,7 +59,7 @@ export function SubscriptionsTable({ subscriptions }: SubscriptionsTableProps) {
           </TableRow>
         )}
 
-        {!subscriptions.isSuccess && (
+        {subscriptions.isSuccess && (
           <>
             {table.getRowModel().rows.length === 0 && (
               <TableRow>

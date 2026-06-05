@@ -57,7 +57,7 @@ export function PaymentsTable({ payments }: PaymentsTableProps) {
           <TableRow><TableCell colSpan={6} className="text-destructive">{String(payments.error)}</TableCell></TableRow>
         )}
 
-        {!payments.isPending && !payments.isError && (
+        {payments.isSuccess && (
           <>
             {table.getRowModel().rows.length === 0 && (
               <TableRow>

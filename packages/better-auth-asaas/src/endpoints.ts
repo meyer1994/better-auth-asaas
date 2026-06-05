@@ -82,8 +82,8 @@ export const listPayments = (client: AsaasClient) => createAuthEndpoint(
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Page<Payment>> => {
-    const customer = encodeURIComponent(ctx.context.session.user.asaasCustomerId);
-    const response = await client.request<Page<Payment>>(`/payments?customer=${customer}`);
+    const id = encodeURIComponent(ctx.context.session.user.id);
+    const response = await client.request<Page<Payment>>(`/payments?externalReference=${id}`);
     return ctx.json(response);
   }
 );
@@ -95,8 +95,8 @@ export const listSubscriptions = (client: AsaasClient) => createAuthEndpoint(
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Page<Subscription>> => {
-    const customer = encodeURIComponent(ctx.context.session.user.asaasCustomerId);
-    const response = await client.request<Page<Subscription>>(`/subscriptions?customer=${customer}`);
+    const id = encodeURIComponent(ctx.context.session.user.id);
+    const response = await client.request<Page<Subscription>>(`/subscriptions?externalReference=${id}`);
     return ctx.json(response);
   }
 );
