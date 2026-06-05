@@ -1,6 +1,7 @@
-import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
+import { APIError, createAuthEndpoint, sessionMiddleware } from "better-auth/api";
 import * as z from "zod";
 import type { AsaasClient } from "./asaas";
+import { requireAsaasCustomerId } from "./middleware";
 import type { CreateSubscription, Page, Payment, PixQrCode, Subscription } from "./types";
 
 export const createPayment = (client: AsaasClient) => createAuthEndpoint(
@@ -13,7 +14,7 @@ export const createPayment = (client: AsaasClient) => createAuthEndpoint(
       dueDate: z.string(),
       description: z.string().max(256).optional(),
     }),
-    use: [sessionMiddleware],
+    use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Payment> => {
     const response = await client.request<Payment>("/payments", {
@@ -53,7 +54,7 @@ export const createSubscription = (client: AsaasClient) => createAuthEndpoint(
       maxPayments: z.number().int().positive().optional(),
       externalReference: z.string().optional(),
     }),
-    use: [sessionMiddleware],
+    use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Subscription> => {
     const response = await client.request<Subscription>("/subscriptions", {
@@ -78,10 +79,11 @@ export const listPayments = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/list" as const,
   {
     method: "GET" as const,
-    use: [sessionMiddleware],
+    use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Page<Payment>> => {
-    const response = await client.request<Page<Payment>>(`/payments`);
+    const customer = encodeURIComponent(ctx.context.session.user.asaasCustomerId);
+    const response = await client.request<Page<Payment>>(`/payments?customer=${customer}`);
     return ctx.json(response);
   }
 );
@@ -90,10 +92,11 @@ export const listSubscriptions = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/subscriptions/list" as const,
   {
     method: "GET" as const,
-    use: [sessionMiddleware],
+    use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Page<Subscription>> => {
-    const response = await client.request<Page<Subscription>>(`/subscriptions`);
+    const customer = encodeURIComponent(ctx.context.session.user.asaasCustomerId);
+    const response = await client.request<Page<Subscription>>(`/subscriptions?customer=${customer}`);
     return ctx.json(response);
   }
 );
@@ -103,9 +106,17 @@ export const getQrCode = (client: AsaasClient) => createAuthEndpoint(
   {
     method: "GET" as const,
     query: z.object({ id: z.string() }),
-    use: [sessionMiddleware],
+    use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<PixQrCode> => {
+    const payment = await client.request<Payment>(`/payments/${ctx.query.id}`);
+
+    if (payment.customer !== ctx.context.session.user.asaasCustomerId) {
+      throw new APIError("UNAUTHORIZED", {
+        message: "Payment does not belong to the authenticated user",
+      });
+    }
+
     const response = await client.request<PixQrCode>(`/payments/${ctx.query.id}/pixQrCode`);
     return ctx.json(response);
   }

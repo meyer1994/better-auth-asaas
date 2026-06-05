@@ -6,6 +6,7 @@ import {
   listPayments,
   listSubscriptions,
 } from "./endpoints";
+import { requireAsaasCustomerId } from "./middleware";
 import type { Page, Payment, PixQrCode, Subscription } from "./types";
 import { AsaasClient } from "./asaas";
 
@@ -80,7 +81,25 @@ const makeSessionContext = () => ({
       },
       user: {
         id: "user_123",
+        email: "joao@example.com",
         asaasCustomerId: "cus_123",
+      },
+    },
+    logger: {
+      debug: vi.fn(),
+    },
+  },
+});
+
+const makeSessionContextWithoutAsaasCustomerId = () => ({
+  context: {
+    session: {
+      session: {
+        id: "session_123",
+      },
+      user: {
+        id: "user_123",
+        email: "joao@example.com",
       },
     },
   },
@@ -91,6 +110,16 @@ const mockClient = (response: unknown = makePayment()): AsaasClient => {
   vi.spyOn(client, "request").mockImplementation(async () => response);
   return client;
 };
+
+describe("requireAsaasCustomerId", () => {
+  it("rejects sessions without an Asaas customer id", async () => {
+    await expect(
+      requireAsaasCustomerId(makeSessionContextWithoutAsaasCustomerId() as never)
+    ).rejects.toMatchObject({
+      status: "UNAUTHORIZED",
+    });
+  });
+});
 
 describe("createPayment", () => {
   it("creates a PIX payment for the authenticated user's Asaas customer", async () => {
@@ -123,20 +152,23 @@ describe("createPayment", () => {
 });
 
 describe("listPayments", () => {
-  it("lists payments for the authenticated user", async () => {
+  it("lists payments for the authenticated user's Asaas customer", async () => {
     const client = mockClient(makePaymentPage());
     const endpoint = listPayments(client);
 
     const result = await endpoint(makeSessionContext());
 
     expect(result).toEqual(makePaymentPage());
-    expect(client.request).toHaveBeenCalledWith("/payments");
+    expect(client.request).toHaveBeenCalledWith("/payments?customer=cus_123");
   });
 });
 
 describe("getQrCode", () => {
-  it("gets the PIX QR code for a payment", async () => {
-    const client = mockClient(makePixQrCode());
+  it("gets the PIX QR code for a payment owned by the authenticated user's Asaas customer", async () => {
+    const client = new AsaasClient({ apiKey: "secret", sandbox: true });
+    vi.spyOn(client, "request")
+      .mockResolvedValueOnce(makePayment())
+      .mockResolvedValueOnce(makePixQrCode());
     const endpoint = getQrCode(client);
 
     const result = await endpoint({
@@ -147,7 +179,28 @@ describe("getQrCode", () => {
     });
 
     expect(result).toEqual(makePixQrCode());
-    expect(client.request).toHaveBeenCalledWith("/payments/pay_123/pixQrCode");
+    expect(client.request).toHaveBeenNthCalledWith(1, "/payments/pay_123");
+    expect(client.request).toHaveBeenNthCalledWith(2, "/payments/pay_123/pixQrCode");
+  });
+
+  it("rejects PIX QR code access for payments owned by another Asaas customer", async () => {
+    const client = mockClient({
+      ...makePayment(),
+      customer: "cus_other",
+    });
+    const endpoint = getQrCode(client);
+
+    await expect(endpoint({
+      query: {
+        id: "pay_123",
+      },
+      ...makeSessionContext(),
+    })).rejects.toMatchObject({
+      status: "UNAUTHORIZED",
+    });
+
+    expect(client.request).toHaveBeenCalledTimes(1);
+    expect(client.request).toHaveBeenCalledWith("/payments/pay_123");
   });
 });
 
@@ -216,13 +269,13 @@ describe("createSubscription", () => {
 });
 
 describe("listSubscriptions", () => {
-  it("lists subscriptions for the authenticated user", async () => {
+  it("lists subscriptions for the authenticated user's Asaas customer", async () => {
     const client = mockClient(makeSubscriptionPage());
     const endpoint = listSubscriptions(client);
 
     const result = await endpoint(makeSessionContext());
 
     expect(result).toEqual(makeSubscriptionPage());
-    expect(client.request).toHaveBeenCalledWith("/subscriptions");
+    expect(client.request).toHaveBeenCalledWith("/subscriptions?customer=cus_123");
   });
 });
