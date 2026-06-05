@@ -39,9 +39,9 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run example:nuxt lint
-      - run: pnpm run example:nuxt typecheck
-      - run: pnpm run build:nuxt
+      - run: pnpm --filter better-auth-asaas-example-nuxt lint
+      - run: pnpm --filter better-auth-asaas-example-nuxt typecheck
+      - run: pnpm --filter better-auth-asaas-example-nuxt build
 
   example-next:
     runs-on: ubuntu-latest
@@ -58,6 +58,6 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run example:next lint
-      - run: pnpm run example:next typecheck
-      - run: pnpm run build:next
+      - run: pnpm --filter better-auth-asaas-example-next lint
+      - run: pnpm --filter better-auth-asaas-example-next typecheck
+      - run: pnpm --filter better-auth-asaas-example-next build
