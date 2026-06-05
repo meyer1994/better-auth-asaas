@@ -7,11 +7,12 @@
 |-- README.md                         # repo overview
 |-- AGENTS.md                         # agent guide
 |-- CLAUDE.md                         # empty local guide
-|-- package.json                      # workspace scripts
+|-- package.json                      # workspace metadata; no root scripts
 |-- pnpm-workspace.yaml               # pnpm packages
 |-- pnpm-lock.yaml                    # locked deps
 |-- tsconfig.json                     # shared TS config
 |-- .mcp.json                         # MCP servers
+|-- .claude/                          # ignored local Claude settings
 |-- .codex/
 |   `-- config.toml                   # Codex MCP config
 |-- packages/
@@ -31,7 +32,10 @@
 |           |-- middleware.ts         # middleware helpers
 |           |-- types.ts              # public types
 |           |-- webhooks.ts           # webhook dispatch
-|           `-- asaas.test.ts         # vitest tests
+|           |-- asaas.test.ts         # Asaas client tests
+|           |-- endpoints.test.ts     # endpoint tests
+|           |-- hooks.test.ts         # hook tests
+|           `-- middleware.test.ts    # middleware tests
 |-- examples/
 |   |-- nuxt/
 |   |   |-- README.md                 # Nuxt example docs
@@ -54,13 +58,17 @@
 |       |-- tsconfig.json             # Next TS config
 |       `-- src/                      # React app
 |-- docs/
-|   `-- superpowers/                  # planning docs
+|   `-- superpowers/                  # ignored planning docs
 `-- .github/
+    |-- dependabot.yml                # dependency updates
     `-- workflows/                    # CI workflows
 ```
 
-Generated folders such as `node_modules`, `dist`, `.nuxt`, `.next`, and `.output`
-are intentionally omitted.
+Ignored/generated folders and files such as `node_modules`, `.pnpm-store`, `dist`,
+`.nuxt`, `.next`, `.output`, `.playwright-mcp`, `.claude`, `docs`, local
+`.env` files, SQLite databases, and TypeScript build info are intentionally omitted
+from the tracked project shape. Note that `docs/superpowers` files can exist locally
+for planning, but `docs` is ignored by `.gitignore`.
 
 
 ## MCP Servers
@@ -81,54 +89,51 @@ Prefer these MCP sources over web search for project-specific framework/API docs
 
 Root workspace:
 
-| Command                          | Description             |
-| -------------------------------- | ----------------------- |
-| `pnpm run dev`                   | Plugin watch build      |
-| `pnpm run test`                  | Plugin tests            |
-| `pnpm run build`                 | Plugin build            |
-| `pnpm run lib <script>`          | Run plugin script       |
-| `pnpm run example:nuxt <script>` | Run Nuxt example script |
-| `pnpm run example:next <script>` | Run Next example script |
-| `pnpm run dev:nuxt`              | Nuxt dev server         |
-| `pnpm run dev:next`              | Next dev server         |
-| `pnpm run build:nuxt`            | Build plugin + Nuxt     |
-| `pnpm run build:next`            | Build plugin + Next     |
+| Command                                               | Description                   |
+| ----------------------------------------------------- | ----------------------------- |
+| `pnpm --filter better-auth-asaas <script>`           | Run a plugin package script   |
+| `pnpm --filter better-auth-asaas-example-nuxt <script>` | Run a Nuxt example script     |
+| `pnpm --filter better-auth-asaas-example-next <script>` | Run a Next example script     |
+
+The root `package.json` currently has no `scripts` block. Use package filters
+instead of root aliases.
 
 Plugin package:
 
-| Command          | Description      |
-| ---------------- | ---------------- |
-| `pnpm run build` | Build with tsup  |
-| `pnpm run dev`   | Watch build      |
-| `pnpm run clean` | Remove artifacts |
-| `pnpm run test`  | Run vitest       |
+| Command                                     | Description      |
+| ------------------------------------------- | ---------------- |
+| `pnpm --filter better-auth-asaas build`     | Build with tsup  |
+| `pnpm --filter better-auth-asaas dev`       | Watch build      |
+| `pnpm --filter better-auth-asaas clean`     | Remove artifacts |
+| `pnpm --filter better-auth-asaas test`      | Run vitest       |
+| `pnpm --filter better-auth-asaas typecheck` | Run TypeScript   |
 
 Nuxt example:
 
-| Command                  | Description          |
-| ------------------------ | -------------------- |
-| `pnpm run dev`           | Start Nuxt dev       |
-| `pnpm run build`         | Production build     |
-| `pnpm run preview`       | Preview build        |
-| `pnpm run clean`         | Remove artifacts     |
-| `pnpm run lint`          | Run ESLint           |
-| `pnpm run typecheck`     | Nuxt typecheck       |
-| `pnpm run auth:generate` | Generate auth schema |
-| `pnpm run db:push`       | Push DB schema       |
-| `pnpm run db:generate`   | Generate migrations  |
-| `pnpm run db:migrate`    | Run migrations       |
+| Command                                                      | Description          |
+| ------------------------------------------------------------ | -------------------- |
+| `pnpm --filter better-auth-asaas-example-nuxt dev`           | Start Nuxt dev       |
+| `pnpm --filter better-auth-asaas-example-nuxt build`         | Production build     |
+| `pnpm --filter better-auth-asaas-example-nuxt preview`       | Preview build        |
+| `pnpm --filter better-auth-asaas-example-nuxt clean`         | Remove artifacts     |
+| `pnpm --filter better-auth-asaas-example-nuxt lint`          | Run ESLint           |
+| `pnpm --filter better-auth-asaas-example-nuxt typecheck`     | Nuxt typecheck       |
+| `pnpm --filter better-auth-asaas-example-nuxt auth:generate` | Generate auth schema |
+| `pnpm --filter better-auth-asaas-example-nuxt db:push`       | Push DB schema       |
+| `pnpm --filter better-auth-asaas-example-nuxt db:generate`   | Generate migrations  |
+| `pnpm --filter better-auth-asaas-example-nuxt db:migrate`    | Run migrations       |
 
 Next example:
 
-| Command                  | Description          |
-| ------------------------ | -------------------- |
-| `pnpm run dev`           | Start Next dev       |
-| `pnpm run build`         | Production build     |
-| `pnpm run start`         | Start production app |
-| `pnpm run lint`          | Run ESLint           |
-| `pnpm run clean`         | Remove artifacts     |
-| `pnpm run typecheck`     | Run TypeScript       |
-| `pnpm run auth:generate` | Generate auth schema |
-| `pnpm run db:push`       | Push DB schema       |
-| `pnpm run db:generate`   | Generate migrations  |
-| `pnpm run db:migrate`    | Run migrations       |
+| Command                                                      | Description          |
+| ------------------------------------------------------------ | -------------------- |
+| `pnpm --filter better-auth-asaas-example-next dev`           | Start Next dev       |
+| `pnpm --filter better-auth-asaas-example-next build`         | Production build     |
+| `pnpm --filter better-auth-asaas-example-next start`         | Start production app |
+| `pnpm --filter better-auth-asaas-example-next lint`          | Run ESLint           |
+| `pnpm --filter better-auth-asaas-example-next clean`         | Remove artifacts     |
+| `pnpm --filter better-auth-asaas-example-next typecheck`     | Run TypeScript       |
+| `pnpm --filter better-auth-asaas-example-next auth:generate` | Generate auth schema |
+| `pnpm --filter better-auth-asaas-example-next db:push`       | Push DB schema       |
+| `pnpm --filter better-auth-asaas-example-next db:generate`   | Generate migrations  |
+| `pnpm --filter better-auth-asaas-example-next db:migrate`    | Run migrations       |
