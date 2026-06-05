@@ -1,5 +1,4 @@
-import { createAuthEndpoint } from "@better-auth/core/api";
-import { sessionMiddleware } from "better-auth/api";
+import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
 import * as z from "zod";
 import type { AsaasClient } from "./asaas";
 import type { CreateSubscription, Page, Payment, PixQrCode, Subscription } from "./types";

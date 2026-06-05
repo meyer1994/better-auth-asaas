@@ -16,7 +16,8 @@
     "db:migrate": "pnpm exec drizzle-kit migrate"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "latest",
+    "@better-auth/core": "catalog:",
+    "@better-auth/drizzle-adapter": "catalog:",
     "@iconify-json/lucide": "^1.2.109",
     "@iconify-json/simple-icons": "^1.2.83",
     "@nuxt/image": "2.0.0",
@@ -26,14 +27,14 @@
     "@vueuse/components": "^14.3.0",
     "@vueuse/core": "^14.3.0",
     "@vueuse/nuxt": "^14.3.0",
-    "better-auth": "^1.6.11",
+    "better-auth": "catalog:",
     "better-auth-asaas": "workspace:*",
     "better-sqlite3": "latest",
     "drizzle-orm": "latest",
     "nuxt": "^4.4.6",
     "tailwindcss": "^4.3.0",
     "vue": "^3.5.34",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",

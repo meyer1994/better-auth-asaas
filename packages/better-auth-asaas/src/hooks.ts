@@ -1,6 +1,6 @@
-import type { GenericEndpointContext } from "@better-auth/core";
-import type { User } from "@better-auth/core/db";
+import type { GenericEndpointContext, User } from "better-auth";
 import { AsaasClient } from "./asaas";
+import type { Customer } from "./types";
 
 type HookOptions = {
   user: User & { cpfCnpj?: string }

@@ -1,12 +1,16 @@
-import next from 'eslint-config-next'
-import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
-import nextTypescript from 'eslint-config-next/typescript'
-
-const config = [
-  { ignores: ['.next/**', 'node_modules/**', 'src/lib/db/auth.ts'] },
-  ...next,
-  ...nextCoreWebVitals,
-  ...nextTypescript,
-]
-
-export default config
+import { defineConfig, globalIgnores } from 'eslint/config'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+ 
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+  ]),
+])
+ 
+export default eslintConfig

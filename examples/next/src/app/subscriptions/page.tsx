@@ -2,24 +2,24 @@
 
 import { RefreshCw } from 'lucide-react'
 
-import { PaymentsForm } from '@/components/payments-form'
-import { PaymentsTable } from '@/components/payments-table'
+import { SubscriptionsForm } from '@/components/subscriptions-form'
+import { SubscriptionsTable } from '@/components/subscriptions-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth, usePayments, useSession } from '@/hooks/auth'
+import { useAuth, useSession, useSubscriptions } from '@/hooks/auth'
 
-export default function PaymentsPage() {
+export default function SubscriptionsPage() { 
   const auth = useAuth()
-  const session = useSession()
-  const payments = usePayments()
+  const session = useSession()  
+  const subscriptions = useSubscriptions()
 
   return (
     <div className="grid w-full gap-4 md:grid-cols-2">
       <div className="flex flex-col gap-4">
-        <PaymentsForm onSubmit={async e => {
-          const { error, data } = await auth.asaas.payments.create(e)
+        <SubscriptionsForm onSubmit={async (e) => {
+          const { error, data } = await auth.asaas.subscriptions.create(e)
           if (error) console.error(error)
-          if (data) await payments.refetch()
+          if (data) await subscriptions.refetch()
         }} />
 
         <Card className="overflow-x-auto">
@@ -31,7 +31,6 @@ export default function PaymentsPage() {
               </Button>
             </CardTitle>
           </CardHeader>
-
           <CardContent>
             <pre className="text-xs">{JSON.stringify(session.data, null, 2)}</pre>
           </CardContent>
@@ -41,15 +40,14 @@ export default function PaymentsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            Payments
-            <Button variant="ghost" size="icon" onClick={() => payments.refetch()}>
+            Subscriptions
+            <Button variant="ghost" size="icon" onClick={() => subscriptions.refetch()}>
               <RefreshCw className="size-4" />
             </Button>
           </CardTitle>
         </CardHeader>
-
         <CardContent>
-          <PaymentsTable payments={payments} />
+          <SubscriptionsTable subscriptions={subscriptions} />
         </CardContent>
       </Card>
     </div>

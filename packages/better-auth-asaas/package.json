@@ -8,7 +8,9 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
+    "lint": "eslint .",
     "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules dist .tsup",
     "test": "vitest run"
   },
@@ -30,16 +32,16 @@
     }
   },
   "devDependencies": {
-    "@better-auth/core": "^1.6.11",
-    "better-auth": "^1.6.11",
-    "better-call": "^1.3.5",
+    "@better-auth/core": "catalog:",
+    "better-auth": "catalog:",
+    "better-call": "catalog:",
     "tsup": "^8.5.1",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "peerDependencies": {
-    "@better-auth/core": "^1.6.11",
-    "better-auth": "^1.6.11",
-    "better-call": "^1.3.5",
-    "zod": "^4.4.3"
+    "@better-auth/core": "catalog:",
+    "better-auth": "catalog:",
+    "better-call": "catalog:",
+    "zod": "catalog:"
   }
 }

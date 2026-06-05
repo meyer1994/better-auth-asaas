@@ -1,0 +1,15 @@
+[mcp_servers.better-auth]
+url = "https://mcp.better-auth.com/mcp"
+
+[mcp_servers.asaas]
+url = "https://docs.asaas.com/mcp"
+
+[mcp_servers.nuxt]
+url = "https://nuxt.com/mcp"
+
+[mcp_servers.nuxt-ui]
+url = "https://ui.nuxt.com/mcp"
+
+[mcp_servers.playwright]
+command = "pnpx"
+args = ["@playwright/mcp@latest"]

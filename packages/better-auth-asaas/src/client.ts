@@ -1,4 +1,4 @@
-import type { BetterAuthClientPlugin } from "@better-auth/core";
+import type { BetterAuthClientPlugin } from "better-auth";
 import type { asaas as asaasServer } from "./server";
 
 export const asaasClient = () => {
