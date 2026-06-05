@@ -2,7 +2,7 @@ import type { GenericEndpointContext, User } from "better-auth";
 import { AsaasClient } from "./asaas";
 import type { Customer } from "./types";
 
-type HookOptions = {
+export type HookOptions = {
   user: User & { cpfCnpj?: string }
   client: AsaasClient
   ctx: GenericEndpointContext | null

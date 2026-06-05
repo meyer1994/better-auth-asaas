@@ -2,16 +2,9 @@
   "name": "better-auth-asaas-monorepo",
   "private": true,
   "scripts": {
-    "dev": "pnpm run lib dev",
-    "test": "pnpm run lib test",
-    "build": "pnpm run lib build",
-    "lib": "pnpm --filter better-auth-asaas",
-    "example:nuxt": "pnpm --filter better-auth-asaas-example-nuxt",
-    "example:next": "pnpm --filter better-auth-asaas-example-next",
-    "dev:nuxt": "pnpm run example:nuxt dev",
-    "dev:next": "pnpm run example:next dev",
-    "build:nuxt": "pnpm --filter better-auth-asaas-example-nuxt... build",
-    "build:next": "pnpm --filter better-auth-asaas-example-next... build"
+    "test": "pnpm run -r test",
+    "clean": "pnpm run -r clean",
+    "build": "pnpm run -r build"
   },
   "devDependencies": {
     "@openai/codex": "^0.136.0",

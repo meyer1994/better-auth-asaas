@@ -12,7 +12,7 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules dist .tsup",
-    "test": "vitest run"
+    "test": "vitest run --reporter verbose"
   },
   "files": [
     "dist"
