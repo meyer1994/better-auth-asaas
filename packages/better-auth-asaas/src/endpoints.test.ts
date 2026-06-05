@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createPayment } from "./endpoints";
-import type { Payment } from "./types";
+import { createPayment, getQrCode, listPayments } from "./endpoints";
+import type { Page, Payment, PixQrCode } from "./types";
 import { AsaasClient } from "./asaas";
 
 const makePayment = () => ( {
@@ -23,9 +23,39 @@ const makePayment = () => ( {
 } as Payment);
 
 
-const mockClient = (): AsaasClient => {
+const makePaymentPage = () => ({
+  object: "list",
+  hasMore: false,
+  totalCount: 1,
+  limit: 10,
+  offset: 0,
+  data: [makePayment()],
+} as Page<Payment>);
+
+const makePixQrCode = () => ({
+  success: true,
+  encodedImage: "base64-image",
+  payload: "pix-payload",
+  expirationDate: "2026-06-12",
+} as PixQrCode);
+
+const makeSessionContext = () => ({
+  context: {
+    session: {
+      session: {
+        id: "session_123",
+      },
+      user: {
+        id: "user_123",
+        asaasCustomerId: "cus_123",
+      },
+    },
+  },
+});
+
+const mockClient = (response: unknown = makePayment()): AsaasClient => {
   const client = new AsaasClient({ apiKey: "secret", sandbox: true });
-  vi.spyOn(client, "request").mockImplementation(async () => makePayment());
+  vi.spyOn(client, "request").mockImplementation(async () => response);
   return client;
 };
 
@@ -41,17 +71,7 @@ describe("createPayment", () => {
         dueDate: "2026-06-12",
         description: "Monthly plan",
       },
-      context: {
-        session: {
-          session: {
-            id: "session_123",
-          },
-          user: {
-            id: "user_123",
-            asaasCustomerId: "cus_123",
-          },
-        },
-      },
+      ...makeSessionContext(),
     });
 
     expect(result).toEqual(makePayment());
@@ -66,5 +86,34 @@ describe("createPayment", () => {
         customer: "cus_123",
       }),
     });
+  });
+});
+
+describe("listPayments", () => {
+  it("lists payments for the authenticated user", async () => {
+    const client = mockClient(makePaymentPage());
+    const endpoint = listPayments(client);
+
+    const result = await endpoint(makeSessionContext());
+
+    expect(result).toEqual(makePaymentPage());
+    expect(client.request).toHaveBeenCalledWith("/payments");
+  });
+});
+
+describe("getQrCode", () => {
+  it("gets the PIX QR code for a payment", async () => {
+    const client = mockClient(makePixQrCode());
+    const endpoint = getQrCode(client);
+
+    const result = await endpoint({
+      query: {
+        id: "pay_123",
+      },
+      ...makeSessionContext(),
+    });
+
+    expect(result).toEqual(makePixQrCode());
+    expect(client.request).toHaveBeenCalledWith("/payments/pay_123/pixQrCode");
   });
 });
