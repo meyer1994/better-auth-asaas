@@ -77,14 +77,14 @@ respect ignore files by default. Use the standard shell tools below when `rg` is
 unavailable, when you need POSIX-style behavior, or when combining file discovery
 with content filters.
 
-| Command | Use for |
-| ------- | ------- |
-| `find . -name "*.ts"` | Find files by name or extension. |
-| `find . -type f -path "*/src/*"` | Find files under matching paths. |
-| `grep -rin "pattern" packages/better-auth-asaas/src` | Recursive, case-insensitive text search with line numbers. |
-| `find packages -type f -name "*.ts" -print0 | xargs -0 grep -n "pattern"` | Search only files selected by `find`. |
-| `grep -rin "payment" . | grep "asaasCustomerId"` | Narrow a broad grep result with a second grep. |
-| `tree -a -I "node_modules|dist|.nuxt|.next|.output|.git"` | Quickly inspect directory shape while hiding generated folders. |
+| Command                                                                    | Use for                                                         |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `find . -name "*.ts"`                                                      | Find files by name or extension.                                |
+| `find . -type f -path "*/src/*"`                                           | Find files under matching paths.                                |
+| `grep -rin "pattern" packages/better-auth-asaas/src`                       | Recursive, case-insensitive text search with line numbers.      |
+| `find packages -type f -name "*.ts" -print0 \| xargs -0 grep -n "pattern"` | Search only files selected by `find`.                           |
+| `grep -rin "payment" . \| grep "asaasCustomerId"`                          | Narrow a broad grep result with a second grep.                  |
+| `tree -a -I "node_modules\|dist\|.nuxt\|.next\|.output\|.git"`             | Quickly inspect directory shape while hiding generated folders. |
 
 Keep searches scoped to relevant directories when possible. Avoid broad searches
 through generated or ignored folders unless the task specifically needs them.
