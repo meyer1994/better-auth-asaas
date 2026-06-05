@@ -1,6 +1,8 @@
-# better-auth-asaas — Next.js example
+# better-auth-asaas - Next.js example
 
-Next.js 15 + shadcn/ui app demoing every `better-auth-asaas` feature: sign-up with auto Asaas customer creation, PIX charge creation, charge listing/details with QR code, and the webhook receiver.
+Next.js 15 + shadcn/ui demo of `better-auth-asaas`: sign-up with auto Asaas
+customer creation, PIX charge creation, subscription creation,
+charge/subscription lists, QR codes, and the webhook receiver.
 
 ## Prerequisites
 
@@ -12,15 +14,15 @@ Next.js 15 + shadcn/ui app demoing every `better-auth-asaas` feature: sign-up wi
 ```bash
 # from repo root
 pnpm install
-pnpm build                       # build the plugin first
+pnpm run build                   # build the plugin first
 
 cd examples/next
 cp .env.example .env             # fill in the values below
-pnpm db:push                     # create the SQLite schema
-pnpm dev                         # http://localhost:3000
+pnpm run db:push                 # create the SQLite schema
+pnpm run dev                     # http://localhost:3000
 ```
 
-### `.env`
+## Env
 
 | Variable                     | Description                                                 |
 | ---------------------------- | ----------------------------------------------------------- |
@@ -32,24 +34,27 @@ pnpm dev                         # http://localhost:3000
 
 ## Pages
 
-| Route        | Description                                                                                 |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `/login`     | Email/password sign-in.                                                                     |
-| `/register`  | Sign-up with name, CPF/CNPJ, email and password. Auto-creates an Asaas customer on submit.  |
-| `/payments`  | Protected dashboard: create PIX charges, list all payments, view QR code per charge.        |
+| Route            | Description                                                       |
+| ---------------- | ----------------------------------------------------------------- |
+| `/`              | Landing.                                                          |
+| `/login`         | Email/password sign-in.                                           |
+| `/register`      | Sign-up with name, CPF/CNPJ, email, and password.                 |
+| `/payments`      | Protected page: create PIX charges, list payments, view QR codes. |
+| `/subscriptions` | Protected page: create and list subscriptions.                    |
 
 ## Commands
 
-| Script               | Description                                          |
-| -------------------- | ---------------------------------------------------- |
-| `pnpm dev`           | Start Next dev server                                |
-| `pnpm build`         | Production build                                     |
-| `pnpm start`         | Run the production build                             |
-| `pnpm typecheck`     | Run `tsc --noEmit`                                   |
-| `pnpm db:push`       | Apply schema via drizzle-kit (no migration files)    |
-| `pnpm db:generate`   | Regenerate auth tables + drizzle migration files     |
-| `pnpm db:migrate`    | Run drizzle migrations                               |
-| `pnpm auth:generate` | Regenerate `src/lib/db/auth.ts` from auth config     |
+| Script                   | Description                                      |
+| ------------------------ | ------------------------------------------------ |
+| `pnpm run dev`           | Start Next dev server                            |
+| `pnpm run build`         | Production build                                 |
+| `pnpm run start`         | Run the production build                         |
+| `pnpm run lint`          | Run ESLint                                       |
+| `pnpm run typecheck`     | Run `tsc --noEmit`                               |
+| `pnpm run db:push`       | Apply schema via drizzle-kit                     |
+| `pnpm run db:generate`   | Regenerate auth tables + drizzle migration files |
+| `pnpm run db:migrate`    | Run drizzle migrations                           |
+| `pnpm run auth:generate` | Regenerate `src/lib/db/auth.ts` from auth config |
 
 ## Webhook (local)
 
@@ -61,9 +66,9 @@ ngrok http 3000
 cloudflared tunnel --url http://localhost:3000
 ```
 
-In Asaas → **Configurações → Webhooks**:
+In Asaas -> **Configuracoes -> Webhooks**:
 
 - URL: `https://<tunnel>/api/auth/asaas/webhook`
 - Access token: value of `ASAAS_WEBHOOK_ACCESS_TOKEN`
 
-`PAYMENT_RECEIVED`, `PAYMENT_OVERDUE`, `PAYMENT_DELETED` are logged from `src/lib/auth.ts`.
+Webhook handlers are configured in `src/lib/auth.ts`.

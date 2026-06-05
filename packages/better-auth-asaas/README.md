@@ -2,7 +2,8 @@
 
 [Asaas](https://www.asaas.com/) payments plugin for [Better
 Auth](https://www.better-auth.com/). Auto-creates an Asaas customer on sign-up
-and exposes endpoints to create and list PIX charges — no extra tables.
+and exposes endpoints for PIX charges, subscriptions, QR codes, and webhook
+dispatch - no extra tables.
 
 ## Install
 
@@ -39,18 +40,22 @@ export const authClient = createAuthClient({
 
 ## Endpoints
 
-| Path                          | Method | Description                               |
-| ----------------------------- | ------ | ----------------------------------------- |
-| `/asaas/payments/create`      | POST   | Create a PIX charge for the session user. |
-| `/asaas/payments/list`        | GET    | List the session user's payments.         |
-| `/asaas/payments/qr?id={pid}` | GET    | Get the PIX QR code for a payment.        |
+| Path                          | Method | Description                                   |
+| ----------------------------- | ------ | --------------------------------------------- |
+| `/asaas/payments/create`      | POST   | Create a PIX charge for the session user.     |
+| `/asaas/payments/list`        | GET    | List payments.                                |
+| `/asaas/payments/qr?id={pid}` | GET    | Get the PIX QR code for a payment.            |
+| `/asaas/subscriptions/create` | POST   | Create a subscription for the session user.   |
+| `/asaas/subscriptions/list`   | GET    | List subscriptions.                           |
+| `/asaas/webhook`              | POST   | Dispatch Asaas payment/subscription webhooks. |
 
 ## Options
 
-| Field     | Type      | Description                                |
-| --------- | --------- | ------------------------------------------ |
-| `apiKey`  | `string`  | Asaas API key.                             |
-| `sandbox` | `boolean` | Use the sandbox base URL. Default `false`. |
+| Field       | Type       | Description                                |
+| ----------- | ---------- | ------------------------------------------ |
+| `apiKey`    | `string`   | Asaas API key.                             |
+| `sandbox`   | `boolean`  | Use the sandbox base URL. Default `false`. |
+| `onWebhook` | `function` | Optional handler for any webhook event.    |
 
 ## Schema
 
@@ -63,9 +68,9 @@ Adds two fields to the `user` table:
 
 ## Commands
 
-| Script       | Description            |
-| ------------ | ---------------------- |
-| `pnpm build` | Build (`tsup`)         |
-| `pnpm dev`   | Build in watch         |
-| `pnpm test`  | Run vitest             |
-| `pnpm clean` | Remove build artifacts |
+| Script           | Description            |
+| ---------------- | ---------------------- |
+| `pnpm run build` | Build (`tsup`)         |
+| `pnpm run dev`   | Build in watch         |
+| `pnpm run test`  | Run vitest             |
+| `pnpm run clean` | Remove build artifacts |
