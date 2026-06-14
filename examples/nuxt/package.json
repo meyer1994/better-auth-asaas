@@ -37,7 +37,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^1.15.2",
+    "@nuxt/eslint": "^1.16.0",
     "@types/better-sqlite3": "latest",
     "drizzle-kit": "latest",
     "eslint": "^10.4.1",
