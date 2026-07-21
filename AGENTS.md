@@ -7,12 +7,14 @@
 |-- README.md                         # plugin docs + repo overview
 |-- AGENTS.md                         # agent guide
 |-- CLAUDE.md                         # empty local guide
+|-- better-auth-asaas.code-workspace  # multi-root VS Code workspace
 |-- package.json                      # publishable better-auth-asaas package
 |-- pnpm-workspace.yaml               # pnpm packages (root + examples)
 |-- pnpm-lock.yaml                    # locked deps
 |-- tsconfig.json                     # plugin TS config
 |-- tsup.config.ts                    # build config
 |-- vitest.config.ts                  # test config
+|-- eslint.config.mjs                 # root ESLint config
 |-- .mcp.json                         # MCP servers
 |-- .claude/                          # ignored local Claude settings
 |-- .codex/
@@ -30,7 +32,8 @@
 |   |-- asaas.test.ts                 # Asaas client tests
 |   |-- endpoints.test.ts             # endpoint tests
 |   |-- hooks.test.ts                 # hook tests
-|   `-- asaas-middleware.test.ts      # middleware tests
+|   |-- asaas-middleware.test.ts      # middleware tests
+|   `-- webhooks.test.ts              # webhook tests
 |-- examples/
 |   |-- nuxt/
 |   |   |-- README.md                 # Nuxt example docs
@@ -102,13 +105,14 @@ Prefer these MCP sources over web search for project-specific framework/API docs
 
 Root package (plugin) — run from repo root:
 
-| Command             | Description      |
-| ------------------- | ---------------- |
-| `pnpm run build`    | Build with tsup  |
-| `pnpm run dev`      | Watch build      |
-| `pnpm run clean`    | Remove artifacts |
-| `pnpm run test`     | Run vitest       |
-| `pnpm run typecheck`| Run TypeScript   |
+| Command              | Description      |
+| -------------------- | ---------------- |
+| `pnpm run build`     | Build with tsup  |
+| `pnpm run dev`       | Watch build      |
+| `pnpm run clean`     | Remove artifacts |
+| `pnpm run test`      | Run vitest       |
+| `pnpm run typecheck` | Run TypeScript   |
+| `pnpm run lint`      | Run ESLint       |
 
 Examples — `cd` into the example, or use a filter from the root:
 

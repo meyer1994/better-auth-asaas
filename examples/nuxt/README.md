@@ -1,7 +1,8 @@
 # better-auth-asaas - Nuxt example
 
 Nuxt + Nuxt UI demo of `better-auth-asaas`: sign-up with auto Asaas customer
-creation, PIX charges, subscriptions, QR codes, and webhooks.
+creation, PIX and credit-card charges, subscriptions, payment lookups, QR codes,
+and webhooks.
 
 ## Prerequisites
 
@@ -42,13 +43,13 @@ Copy `.env.example` to `.env` and set:
 
 ## Pages
 
-| Route            | Description                                                       |
-| ---------------- | ----------------------------------------------------------------- |
-| `/`              | Landing.                                                          |
-| `/login`         | Email/password sign-in.                                           |
-| `/register`      | Sign-up with name, CPF/CNPJ, email, and password.                 |
-| `/payments`      | Protected page: create PIX charges, list payments, view QR codes. |
-| `/subscriptions` | Protected page: create and list subscriptions.                    |
+| Route            | Description                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `/`              | Landing.                                                                                             |
+| `/login`         | Email/password sign-in.                                                                              |
+| `/register`      | Sign-up with name, CPF/CNPJ, email, and password.                                                    |
+| `/payments`      | Protected page: PIX/credit-card charges, pay existing charges, lookups, list payments, view QR codes.|
+| `/subscriptions` | Protected page: create/update/delete subscriptions, credit card, payments list, and payment book.    |
 
 ## Commands
 
@@ -78,3 +79,5 @@ In Asaas -> **Configuracoes -> Webhooks**:
 
 - URL: `https://<tunnel>/api/auth/asaas/webhook`
 - Access token: value of `ASAAS_WEBHOOK_ACCESS_TOKEN`
+
+Webhook handlers are configured in `server/utils/auth.ts`.
