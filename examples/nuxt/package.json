@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "@better-auth/core": "catalog:",
-    "@better-auth/drizzle-adapter": "^1.6.14",
-    "@iconify-json/lucide": "^1.2.111",
-    "@iconify-json/simple-icons": "^1.2.85",
+    "@better-auth/drizzle-adapter": "^1.6.23",
+    "@iconify-json/lucide": "^1.2.118",
+    "@iconify-json/simple-icons": "^1.2.91",
     "@nuxt/image": "2.0.0",
-    "@nuxt/ui": "^4.8.2",
+    "@nuxt/ui": "^4.10.0",
     "@nuxtjs/tailwindcss": "6.14.0",
     "@tanstack/table-core": "^8.21.3",
     "@vueuse/components": "^14.3.0",
@@ -31,17 +31,17 @@
     "better-auth-asaas": "workspace:*",
     "better-sqlite3": "latest",
     "drizzle-orm": "latest",
-    "nuxt": "^4.4.7",
-    "tailwindcss": "^4.3.0",
-    "vue": "^3.5.35",
+    "nuxt": "^4.5.0",
+    "tailwindcss": "^4.3.3",
+    "vue": "^3.5.40",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^1.15.2",
+    "@nuxt/eslint": "^1.16.0",
     "@types/better-sqlite3": "latest",
     "drizzle-kit": "latest",
-    "eslint": "^10.4.1",
+    "eslint": "^10.7.0",
     "typescript": "^6.0.3",
-    "vue-tsc": "^3.3.3"
+    "vue-tsc": "^3.3.7"
   }
 }
