@@ -62,6 +62,36 @@ describe("asaas plugin", () => {
     ].sort());
   });
 
+  it("declares asaasPayment and asaasSubscription tables in the plugin schema", () => {
+    expect(plugin.schema).toMatchObject({
+      user: {
+        fields: {
+          asaasCustomerId: expect.any(Object),
+          cpfCnpj: expect.any(Object),
+        },
+      },
+      asaasPayment: {
+        fields: {
+          userId: expect.objectContaining({
+            references: { model: "user", field: "id", onDelete: "cascade" },
+          }),
+          asaasPaymentId: expect.objectContaining({ unique: true }),
+          status: expect.any(Object),
+        },
+      },
+      asaasSubscription: {
+        fields: {
+          userId: expect.objectContaining({
+            references: { model: "user", field: "id", onDelete: "cascade" },
+          }),
+          asaasSubscriptionId: expect.objectContaining({ unique: true }),
+          status: expect.any(Object),
+          cycle: expect.any(Object),
+        },
+      },
+    });
+  });
+
   it("defines default rate limits for webhook and asaas API routes", () => {
     expect(plugin.rateLimit).toEqual(
       expect.arrayContaining([

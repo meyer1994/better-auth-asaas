@@ -144,14 +144,140 @@ export const asaas = <O extends Options>(options: O) => {
       user: {
         fields: {
           asaasCustomerId: {
-            type: 'string',
+            type: "string",
             required: false,
             input: false,
           },
           cpfCnpj: {
-            type: 'string',
+            type: "string",
             required: true,
             input: true,
+          },
+        },
+      },
+      asaasPayment: {
+        fields: {
+          userId: {
+            type: "string",
+            required: true,
+            references: {
+              model: "user",
+              field: "id",
+              onDelete: "cascade",
+            },
+          },
+          asaasPaymentId: {
+            type: "string",
+            required: true,
+            unique: true,
+          },
+          asaasCustomerId: {
+            type: "string",
+            required: true,
+          },
+          asaasSubscriptionId: {
+            type: "string",
+            required: false,
+          },
+          status: {
+            type: "string",
+            required: true,
+          },
+          billingType: {
+            type: "string",
+            required: true,
+          },
+          value: {
+            type: "string",
+            required: true,
+          },
+          dueDate: {
+            type: "string",
+            required: true,
+          },
+          paymentDate: {
+            type: "string",
+            required: false,
+          },
+          description: {
+            type: "string",
+            required: false,
+          },
+          deleted: {
+            type: "boolean",
+            required: true,
+            defaultValue: false,
+          },
+          createdAt: {
+            type: "date",
+            required: true,
+          },
+          updatedAt: {
+            type: "date",
+            required: true,
+          },
+        },
+      },
+      asaasSubscription: {
+        fields: {
+          userId: {
+            type: "string",
+            required: true,
+            references: {
+              model: "user",
+              field: "id",
+              onDelete: "cascade",
+            },
+          },
+          asaasSubscriptionId: {
+            type: "string",
+            required: true,
+            unique: true,
+          },
+          asaasCustomerId: {
+            type: "string",
+            required: true,
+          },
+          status: {
+            type: "string",
+            required: true,
+          },
+          billingType: {
+            type: "string",
+            required: true,
+          },
+          cycle: {
+            type: "string",
+            required: true,
+          },
+          value: {
+            type: "string",
+            required: true,
+          },
+          nextDueDate: {
+            type: "string",
+            required: true,
+          },
+          endDate: {
+            type: "string",
+            required: false,
+          },
+          description: {
+            type: "string",
+            required: false,
+          },
+          deleted: {
+            type: "boolean",
+            required: true,
+            defaultValue: false,
+          },
+          createdAt: {
+            type: "date",
+            required: true,
+          },
+          updatedAt: {
+            type: "date",
+            required: true,
           },
         },
       },

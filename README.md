@@ -3,7 +3,9 @@
 [Asaas](https://www.asaas.com/) payments plugin for [Better
 Auth](https://www.better-auth.com/). Auto-creates an Asaas customer on sign-up
 and exposes endpoints for PIX and credit-card charges, subscriptions, payment
-lookups, QR codes, and webhook dispatch - no extra tables.
+lookups, QR codes, and webhook dispatch. Local `asaas_payment` and
+`asaas_subscription` tables mirror create/webhook state while Asaas remains the
+source of truth.
 
 ## Layout
 
@@ -112,12 +114,54 @@ handlers. Subscription handlers include `onSubscriptionCreated`,
 
 ## Schema
 
-Adds two fields to the `user` table:
+Adds fields to the `user` table and two mirror tables (`asaasPayment`,
+`asaasSubscription`). Asaas remains the source of truth for create/list/get API
+calls; local rows are upserted after successful creates and from webhook
+payloads. Run `auth generate` (or your ORM migrate flow) after adding the
+plugin.
+
+### `user`
 
 | Field             | Type     | Notes                                  |
 | ----------------- | -------- | -------------------------------------- |
 | `cpfCnpj`         | `string` | Required at sign-up.                   |
 | `asaasCustomerId` | `string` | Set automatically after user creation. |
+
+### `asaasPayment`
+
+| Field                 | Type      | Notes                                      |
+| --------------------- | --------- | ------------------------------------------ |
+| `userId`              | `string`  | References `user.id` (cascade).             |
+| `asaasPaymentId`      | `string`  | Unique Asaas payment id.                   |
+| `asaasCustomerId`     | `string`  | Asaas customer id.                         |
+| `asaasSubscriptionId` | `string?` | Set when the payment belongs to a subscription. |
+| `status`              | `string`  | Asaas payment status.                      |
+| `billingType`         | `string`  | e.g. `PIX`, `CREDIT_CARD`.                 |
+| `value`               | `string`  | Charge amount (string to preserve decimals). |
+| `dueDate`             | `string`  | Asaas due date string.                     |
+| `paymentDate`         | `string?` | Asaas payment date string.                 |
+| `description`         | `string?` | Optional description.                      |
+| `deleted`             | `boolean` | Mirrored from Asaas (`payment.deleted`).   |
+| `createdAt`           | `date`    | Local row created at.                      |
+| `updatedAt`           | `date`    | Local row updated at.                      |
+
+### `asaasSubscription`
+
+| Field                  | Type      | Notes                                         |
+| ---------------------- | --------- | --------------------------------------------- |
+| `userId`               | `string`  | References `user.id` (cascade).                |
+| `asaasSubscriptionId`  | `string`  | Unique Asaas subscription id.                 |
+| `asaasCustomerId`      | `string`  | Asaas customer id.                            |
+| `status`               | `string`  | Asaas subscription status.                    |
+| `billingType`          | `string`  | e.g. `PIX`, `CREDIT_CARD`.                    |
+| `cycle`                | `string`  | Billing cycle.                                |
+| `value`                | `string`  | Subscription amount (string to preserve decimals). |
+| `nextDueDate`          | `string`  | Asaas next due date string.                   |
+| `endDate`              | `string?` | Optional end date.                            |
+| `description`          | `string?` | Optional description.                         |
+| `deleted`              | `boolean` | Mirrored from Asaas (`subscription.deleted`). |
+| `createdAt`            | `date`    | Local row created at.                         |
+| `updatedAt`            | `date`    | Local row updated at.                         |
 
 ## Commands
 

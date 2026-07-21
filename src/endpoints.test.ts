@@ -87,23 +87,33 @@ const makeSubscriptionPage = () => ({
   data: [makeSubscription()],
 } as Page<Subscription>);
 
-const makeSessionContext = () => ({
-  context: {
-    session: {
+const makeSessionContext = () => {
+  const adapter = {
+    update: vi.fn().mockResolvedValue(null),
+    create: vi.fn().mockResolvedValue({ id: "local_1" }),
+  };
+  return {
+    context: {
       session: {
-        id: "session_123",
+        session: {
+          id: "session_123",
+        },
+        user: {
+          id: "user_123",
+          email: "joao@example.com",
+          asaasCustomerId: "cus_123",
+        },
       },
-      user: {
-        id: "user_123",
-        email: "joao@example.com",
-        asaasCustomerId: "cus_123",
+      adapter,
+      logger: {
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        info: vi.fn(),
       },
     },
-    logger: {
-      debug: vi.fn(),
-    },
-  },
-});
+  };
+};
 
 const makeSessionContextWithoutAsaasCustomerId = () => ({
   context: {
@@ -139,6 +149,7 @@ describe("createPayment", () => {
   it("creates a PIX payment for the authenticated user's Asaas customer", async () => {
     const client = mockClient();
     const endpoint = createPayment(client);
+    const session = makeSessionContext();
 
     const result = await endpoint({
       body: {
@@ -147,7 +158,7 @@ describe("createPayment", () => {
         dueDate: "2026-06-12",
         description: "Monthly plan",
       },
-      ...makeSessionContext(),
+      ...session,
     });
 
     expect(result).toEqual(makePayment());
@@ -162,6 +173,40 @@ describe("createPayment", () => {
         customer: "cus_123",
       }),
     });
+    expect(session.context.adapter.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: "asaasPayment",
+        where: [{ field: "asaasPaymentId", value: "pay_123" }],
+      }),
+    );
+    expect(session.context.adapter.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: "asaasPayment",
+        data: expect.objectContaining({
+          userId: "user_123",
+          asaasPaymentId: "pay_123",
+        }),
+      }),
+    );
+  });
+
+  it("still returns the Asaas payment when local sync fails", async () => {
+    const client = mockClient();
+    const endpoint = createPayment(client);
+    const session = makeSessionContext();
+    session.context.adapter.update.mockRejectedValue(new Error("db down"));
+
+    const result = await endpoint({
+      body: {
+        billingType: "PIX",
+        value: 49.9,
+        dueDate: "2026-06-12",
+      },
+      ...session,
+    });
+
+    expect(result).toEqual(makePayment());
+    expect(session.context.logger.error).toHaveBeenCalled();
   });
 });
 
@@ -564,6 +609,7 @@ describe("createSubscription", () => {
   it("creates a subscription with an explicit external reference", async () => {
     const client = mockClient(makeSubscription());
     const endpoint = createSubscription(client);
+    const session = makeSessionContext();
 
     const result = await endpoint({
       body: {
@@ -576,7 +622,7 @@ describe("createSubscription", () => {
         maxPayments: 6,
         externalReference: "subscription_123",
       },
-      ...makeSessionContext(),
+      ...session,
     });
 
     expect(result).toEqual(makeSubscription());
@@ -594,6 +640,21 @@ describe("createSubscription", () => {
         customer: "cus_123",
       }),
     });
+    expect(session.context.adapter.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: "asaasSubscription",
+        where: [{ field: "asaasSubscriptionId", value: "sub_123" }],
+      }),
+    );
+    expect(session.context.adapter.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: "asaasSubscription",
+        data: expect.objectContaining({
+          userId: "user_123",
+          asaasSubscriptionId: "sub_123",
+        }),
+      }),
+    );
   });
 
   it("defaults the external reference to the authenticated user id", async () => {

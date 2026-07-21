@@ -29,11 +29,13 @@
 |   |-- asaas-middleware.ts           # auth middleware helpers
 |   |-- types.ts                      # public types
 |   |-- webhooks.ts                   # webhook dispatch
+|   |-- sync.ts                       # local payment/subscription upserts
 |   |-- asaas.test.ts                 # Asaas client tests
 |   |-- endpoints.test.ts             # endpoint tests
 |   |-- hooks.test.ts                 # hook tests
 |   |-- asaas-middleware.test.ts      # middleware tests
-|   `-- webhooks.test.ts              # webhook tests
+|   |-- webhooks.test.ts              # webhook tests
+|   `-- sync.test.ts                  # sync helper tests
 |-- examples/
 |   |-- nuxt/
 |   |   |-- README.md                 # Nuxt example docs

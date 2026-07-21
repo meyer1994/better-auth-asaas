@@ -2,6 +2,7 @@ import { APIError, createAuthEndpoint, sessionMiddleware } from "better-auth/api
 import * as z from "zod";
 import type { AsaasClient } from "./asaas";
 import { requireAsaasCustomerId } from "./asaas-middleware";
+import { upsertPayment, upsertSubscription } from "./sync";
 import type {
   CreateSubscription,
   Page,
@@ -115,6 +116,7 @@ export const createPayment = (client: AsaasClient) => createAuthEndpoint(
         customer: ctx.context.session.user.asaasCustomerId,
       }),
     });
+    await upsertPayment(ctx, response, { userId: ctx.context.session.user.id });
     return ctx.json(response);
   }
 );
@@ -178,6 +180,7 @@ export const createPaymentWithCreditCard = (client: AsaasClient) => createAuthEn
         customer: ctx.context.session.user.asaasCustomerId,
       }),
     });
+    await upsertPayment(ctx, response, { userId: ctx.context.session.user.id });
     return ctx.json(response);
   }
 );
@@ -450,6 +453,7 @@ export const createSubscription = (client: AsaasClient) => createAuthEndpoint(
         customer: ctx.context.session.user.asaasCustomerId,
       } satisfies CreateSubscription),
     });
+    await upsertSubscription(ctx, response, { userId: ctx.context.session.user.id });
     return ctx.json(response);
   }
 );
@@ -520,6 +524,7 @@ export const createSubscriptionWithCreditCard = (client: AsaasClient) => createA
         customer: ctx.context.session.user.asaasCustomerId,
       }),
     });
+    await upsertSubscription(ctx, response, { userId: ctx.context.session.user.id });
     return ctx.json(response);
   }
 );

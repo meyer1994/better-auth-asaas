@@ -1,5 +1,6 @@
 import { APIError, createAuthEndpoint } from "better-auth/api";
 import type { AsaasClient } from "./asaas";
+import { upsertPayment, upsertSubscription } from "./sync";
 import type { Event, EventType, Payment, Subscription } from "./types";
 
 export interface WebhookOptions {
@@ -69,8 +70,23 @@ export const webhook = (opts: WebhookOptions) =>
 
       const event = ctx.body as Event<Payment | Subscription, EventType>;
 
-      const promises = [];
+      if ("payment" in event && event.payment) {
+        const payment = event.payment as Payment;
+        if (payment.externalReference) {
+          const options = { userId: payment.externalReference };
+          upsertPayment(ctx, payment, options).catch(e => console.error(e));
+        }
+      }
 
+      if ("subscription" in event && event.subscription) {
+        const subscription = event.subscription as Subscription;
+        if (subscription.externalReference) {
+          const options = { userId: subscription.externalReference };
+          upsertSubscription(ctx, subscription, options).catch(e => console.error(e));
+        }
+      }
+
+      const promises = [];
       promises.push(opts.onWebhook?.(event));
 
       switch (event.event) {

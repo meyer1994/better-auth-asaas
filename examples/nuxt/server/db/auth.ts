@@ -89,9 +89,49 @@ export const verification = sqliteTable(
   table => [index('verification_identifier_idx').on(table.identifier)],
 )
 
+export const asaasPayment = sqliteTable('asaas_payment', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  asaasPaymentId: text('asaas_payment_id').notNull().unique(),
+  asaasCustomerId: text('asaas_customer_id').notNull(),
+  asaasSubscriptionId: text('asaas_subscription_id'),
+  status: text('status').notNull(),
+  billingType: text('billing_type').notNull(),
+  value: text('value').notNull(),
+  dueDate: text('due_date').notNull(),
+  paymentDate: text('payment_date'),
+  description: text('description'),
+  deleted: integer('deleted', { mode: 'boolean' }).default(false).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+})
+
+export const asaasSubscription = sqliteTable('asaas_subscription', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  asaasSubscriptionId: text('asaas_subscription_id').notNull().unique(),
+  asaasCustomerId: text('asaas_customer_id').notNull(),
+  status: text('status').notNull(),
+  billingType: text('billing_type').notNull(),
+  cycle: text('cycle').notNull(),
+  value: text('value').notNull(),
+  nextDueDate: text('next_due_date').notNull(),
+  endDate: text('end_date'),
+  description: text('description'),
+  deleted: integer('deleted', { mode: 'boolean' }).default(false).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+})
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  asaasPayments: many(asaasPayment),
+  asaasSubscriptions: many(asaasSubscription),
 }))
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -107,3 +147,20 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }))
+
+export const asaasPaymentRelations = relations(asaasPayment, ({ one }) => ({
+  user: one(user, {
+    fields: [asaasPayment.userId],
+    references: [user.id],
+  }),
+}))
+
+export const asaasSubscriptionRelations = relations(
+  asaasSubscription,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [asaasSubscription.userId],
+      references: [user.id],
+    }),
+  }),
+)

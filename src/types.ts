@@ -156,6 +156,7 @@ export type Payment = {
   id: string;
   dateCreated: string;
   customer: string;
+  subscription?: string | null;
   value: number;
   netValue: number;
   originalValue: number | null;
