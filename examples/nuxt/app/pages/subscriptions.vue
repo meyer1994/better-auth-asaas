@@ -128,6 +128,14 @@ if (!session.value) await navigateTo('/login', { replace: true })
         </UCard>
       </UForm>
 
+      <SubscriptionsCreateCreditCardForm @success="() => refreshSubscriptions()" />
+      <SubscriptionsGetForm />
+      <SubscriptionsUpdateForm @success="() => refreshSubscriptions()" />
+      <SubscriptionsUpdateCreditCardForm @success="() => refreshSubscriptions()" />
+      <SubscriptionsDeleteForm @success="() => refreshSubscriptions()" />
+      <SubscriptionsPaymentsListForm />
+      <SubscriptionsPaymentBookForm />
+
       <!-- session card -->
       <UCard class="overflow-x-auto">
         <template #title>
