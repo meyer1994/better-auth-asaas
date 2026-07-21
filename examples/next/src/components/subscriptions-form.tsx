@@ -114,7 +114,7 @@ export function SubscriptionsForm({ onSubmit }: Props) {
                 <Label htmlFor={field.name}>Cycle</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={(value) => field.handleChange(value as typeof field.state.value)}
+                  onValueChange={(value: string) => field.handleChange(value as typeof field.state.value)}
                 >
                   <SelectTrigger id={field.name}>
                     <SelectValue />
@@ -139,7 +139,7 @@ export function SubscriptionsForm({ onSubmit }: Props) {
                 <Label htmlFor={field.name}>Billing type</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={(value) => field.handleChange(value as typeof field.state.value)}
+                  onValueChange={(value: string) => field.handleChange(value as typeof field.state.value)}
                 >
                   <SelectTrigger id={field.name}>
                     <SelectValue />

@@ -112,7 +112,7 @@ export function PaymentsForm({ onSubmit }: Props) {
                 <Label htmlFor={field.name}>Billing type</Label>
                 <Select
                   value={field.state.value}
-                  onValueChange={(value) => field.handleChange(value as typeof field.state.value)}
+                  onValueChange={(value: string) => field.handleChange(value as typeof field.state.value)}
                 >
                   <SelectTrigger id={field.name}>
                     <SelectValue />
