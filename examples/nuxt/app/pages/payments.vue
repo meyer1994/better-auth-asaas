@@ -16,7 +16,7 @@ const schema = z.object({
 
 const state = reactive<z.infer<typeof schema>>({
   value: 100,
-  dueDate: '2026-06-20',
+  dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
   billingType: 'PIX',
   description: 'Test payment',
 })

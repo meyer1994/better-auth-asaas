@@ -15,7 +15,7 @@ export default defineNuxtConfig({
 
   vite: {
     server: {
-      allowedHosts: ['dev.jmeyer.dev'],
+      allowedHosts: ['dev.jmeyer.dev', 'free-loudly-dingo.ngrok-free.app'],
     },
     optimizeDeps: {
       include: [
