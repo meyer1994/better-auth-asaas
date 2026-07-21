@@ -1,10 +1,11 @@
-import { createAuthEndpoint } from "better-auth/api";
+import { APIError, createAuthEndpoint } from "better-auth/api";
 import type { AsaasClient } from "./asaas";
 import type { Event, EventType, Payment, Subscription } from "./types";
 
 export interface WebhookOptions {
   client: AsaasClient;
-  
+  webhookAccessToken: string;
+
   onWebhook?: (event: Event<unknown, EventType>) => Promise<unknown> | unknown;
 
   onPaymentCreated?: (event: Event<Payment, "PAYMENT_CREATED">) => Promise<unknown> | unknown;
@@ -53,6 +54,19 @@ export const webhook = (opts: WebhookOptions) =>
       use: [],
     },
     async (ctx): Promise<{ success: boolean }> => {
+      const token = ctx.headers?.get("asaas-access-token");
+      if (!token) {
+        throw new APIError("UNAUTHORIZED", {
+          message: "Missing asaas-access-token header",
+        });
+      }
+
+      if (token !== opts.webhookAccessToken) {
+        throw new APIError("UNAUTHORIZED", {
+          message: "Invalid webhook access token",
+        });
+      }
+
       const event = ctx.body as Event<Payment | Subscription, EventType>;
 
       const promises = [];

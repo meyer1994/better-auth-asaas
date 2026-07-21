@@ -31,6 +31,10 @@ export const auth = betterAuth({
     asaas({
       apiKey: process.env.ASAAS_API_KEY!,
       sandbox: true,
+
+      webhookAccessToken: process.env.ASAAS_WEBHOOK_ACCESS_TOKEN!,
+      onWebhook: (e) => console.log(e.event, e.id),
+      onPaymentReceived: (e) => console.log("paid", e.payment.id),
     }),
   ],
 });
@@ -59,11 +63,17 @@ export const authClient = createAuthClient({
 
 ## Options
 
-| Field       | Type       | Description                                |
-| ----------- | ---------- | ------------------------------------------ |
-| `apiKey`    | `string`   | Asaas API key.                             |
-| `sandbox`   | `boolean`  | Use the sandbox base URL. Default `false`. |
-| `onWebhook` | `function` | Optional handler for any webhook event.    |
+| Field     | Type      | Description                                |
+| --------- | --------- | ------------------------------------------ |
+| `apiKey`  | `string`  | Asaas API key.                             |
+| `sandbox` | `boolean` | Use the sandbox base URL. Default `false`. |
+
+### Webhooks
+
+| Field                | Type       | Description                                                      |
+| -------------------- | ---------- | ---------------------------------------------------------------- |
+| `webhookAccessToken` | `string`   | Shared secret; must match the Asaas `asaas-access-token` header. |
+| `onWebhook`          | `function` | Optional handler for any webhook event.                          |
 
 Webhook-specific handlers are also supported. Payment handlers include
 `onPaymentCreated`, `onPaymentReceived`, `onPaymentUpdated`,

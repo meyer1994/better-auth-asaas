@@ -16,6 +16,7 @@ export const auth = betterAuth({
     asaas({
       apiKey: process.env.ASAAS_API_KEY!,
       sandbox: process.env.ASAAS_SANDBOX !== 'false',
+      webhookAccessToken: process.env.ASAAS_WEBHOOK_ACCESS_TOKEN!,
 
       onWebhook: e => console.log('Webhook received', e.event, e.id),
 

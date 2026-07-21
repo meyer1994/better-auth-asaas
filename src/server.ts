@@ -25,7 +25,8 @@ export const asaas = <O extends Options>(options: O) => {
 
       webhook: webhook({
         client,
-        
+        webhookAccessToken: options.webhookAccessToken,
+
         onWebhook: options.onWebhook,
         
         onPaymentCreated: options.onPaymentCreated,
