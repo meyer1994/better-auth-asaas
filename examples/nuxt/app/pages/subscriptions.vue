@@ -2,11 +2,8 @@
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import type { Subscription } from 'better-auth-asaas/types'
 import { z } from 'zod'
-import { useAuth } from '~/composables/auth'
 
-definePageMeta({ auth: true })
-
-const auth = useAuth()
+const { $auth } = useNuxtApp()
 const toast = useToast()
 
 const schema = z.object({
@@ -39,9 +36,11 @@ const [
   { data: session, refresh: refreshSession, status: sessionStatus },
   { data: subscriptions, refresh: refreshSubscriptions, status: subscriptionsStatus, error: subscriptionsError },
 ] = await Promise.all([
-  useSession(),
+  $auth.useSession(),
   useSubscriptions(),
 ])
+
+if (!session.value) await navigateTo('/login', { replace: true })
 </script>
 
 <template>
@@ -58,7 +57,7 @@ const [
             return
           }
 
-          const { data, error } = await auth.asaas.subscriptions.create({
+          const { data, error } = await $auth.asaas.subscriptions.create({
             value: e.data.value,
             nextDueDate: e.data.nextDueDate,
             cycle: e.data.cycle,

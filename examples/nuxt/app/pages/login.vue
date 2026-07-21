@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui'
 
-const auth = useAuth()
+const { $auth } = useNuxtApp()
 const toast = useToast()
 
 const schema = z.object({
@@ -26,7 +26,7 @@ const fields: AuthFormField[] = [
         :fields="fields"
         :schema="schema"
         @submit="async (event: FormSubmitEvent<z.infer<typeof schema>>) => {
-          const { error, data } = await auth.signIn.email(event.data)
+          const { error, data } = await $auth.signIn.email(event.data)
           if (error) console.error(error)
           if (error) toast.add({ title: 'Sign-in failed', description: error.message, color: 'error' })
           if (data) await reloadNuxtApp({ path: '/payments' })

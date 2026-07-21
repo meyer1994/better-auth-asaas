@@ -3,11 +3,8 @@ import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import { UseClipboard } from '@vueuse/components'
 import type { Payment } from 'better-auth-asaas/types'
 import { z } from 'zod'
-import { useAuth } from '~/composables/auth'
 
-definePageMeta({ auth: true })
-
-const auth = useAuth()
+const { $auth } = useNuxtApp()
 const toast = useToast()
 
 const schema = z.object({
@@ -37,9 +34,11 @@ const [
   { data: session, refresh: refreshSession, status: sessionStatus },
   { data: payments, refresh: refreshPayments, status: paymentsStatus, error: paymentsError },
 ] = await Promise.all([
-  useSession(),
+  $auth.useSession(),
   usePayments(),
 ])
+
+if (!session.value) await navigateTo('/login', { replace: true })
 </script>
 
 <template>
@@ -56,7 +55,7 @@ const [
             return
           }
 
-          const { data, error } = await auth.asaas.payments.create({
+          const { data, error } = await $auth.asaas.payments.create({
             value: e.data.value,
             dueDate: e.data.dueDate,
             billingType: e.data.billingType,
@@ -166,7 +165,7 @@ const [
                 v-slot="{ data }"
                 :fetch-key="['payment', 'qr', row.original.id]"
                 :handler="async () => {
-                  const { data, error } = await auth.asaas.payments.qr({ query: { id: row.original.id } })
+                  const { data, error } = await $auth.asaas.payments.qr({ query: { id: row.original.id } })
                   if (error) throw error
                   return data
                 }"

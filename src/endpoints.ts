@@ -1,7 +1,7 @@
 import { APIError, createAuthEndpoint, sessionMiddleware } from "better-auth/api";
 import * as z from "zod";
 import type { AsaasClient } from "./asaas";
-import { requireAsaasCustomerId } from "./middleware";
+import { requireAsaasCustomerId } from "./asaas-middleware";
 import type { CreateSubscription, Page, Payment, PixQrCode, Subscription } from "./types";
 
 export const createPayment = (client: AsaasClient) => createAuthEndpoint(

@@ -24,13 +24,13 @@
 |   |-- asaas.ts                      # Asaas API client
 |   |-- endpoints.ts                  # auth endpoints
 |   |-- hooks.ts                      # user hooks
-|   |-- middleware.ts                 # middleware helpers
+|   |-- asaas-middleware.ts           # auth middleware helpers
 |   |-- types.ts                      # public types
 |   |-- webhooks.ts                   # webhook dispatch
 |   |-- asaas.test.ts                 # Asaas client tests
 |   |-- endpoints.test.ts             # endpoint tests
 |   |-- hooks.test.ts                 # hook tests
-|   `-- middleware.test.ts            # middleware tests
+|   `-- asaas-middleware.test.ts      # middleware tests
 |-- examples/
 |   |-- nuxt/
 |   |   |-- README.md                 # Nuxt example docs

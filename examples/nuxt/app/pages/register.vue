@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { AuthFormField } from '@nuxt/ui'
 
-const auth = useAuth()
+const { $auth } = useNuxtApp()
 const toast = useToast()
 
 const schema = z.object({
@@ -20,7 +20,7 @@ const fields: AuthFormField[] = [
 ]
 
 async function onSubmit(payload: { data: z.infer<typeof schema> }) {
-  const { error, data } = await auth.signUp.email({
+  const { error, data } = await $auth.signUp.email({
     name: payload.data.name || payload.data.email,
     email: payload.data.email,
     password: payload.data.password,

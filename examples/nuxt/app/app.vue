@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useAuth, useSession } from '~/composables/auth'
 import type { NavigationMenuItem } from '@nuxt/ui'
 
-const auth = useAuth()
-const { data: session, clear } = await useSession()
+const { $auth } = useNuxtApp()
+const { data: session, clear } = await $auth.useSession()
 
 const items = computed<NavigationMenuItem[]>(() => {
   if (!session.value) {
@@ -20,7 +19,7 @@ const items = computed<NavigationMenuItem[]>(() => {
 })
 
 async function signOut() {
-  const { error, data } = await auth.signOut()
+  const { error, data } = await $auth.signOut()
   if (error) console.error(error)
   if (data?.success) clear()
   if (data?.success) await navigateTo('/login', { replace: true })
