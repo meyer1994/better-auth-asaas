@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { nextCookies } from 'better-auth/next-js'
 import { drizzleAdapter } from '@better-auth/drizzle-adapter'
-import { asaas } from 'better-auth-asaas'
+import { asaas } from '@meyer1994/better-auth-asaas'
 import { db } from './db'
 import * as schema from './db/schema'
 

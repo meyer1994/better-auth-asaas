@@ -3,7 +3,7 @@
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
 
-import type { Page, Payment } from 'better-auth-asaas/types'
+import type { Page, Payment } from '@meyer1994/better-auth-asaas/types'
 import type { UseQueryResult } from '@tanstack/react-query'
 
 import { PaymentQrButton } from '@/components/payment-qr-button'

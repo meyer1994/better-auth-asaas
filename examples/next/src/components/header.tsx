@@ -11,7 +11,7 @@ export function Header() {
 
   return (
     <header className="flex items-center justify-between border-b px-8 py-3">
-      <Link href="/" className="font-semibold">better-auth-asaas</Link>
+      <Link href="/" className="font-semibold">@meyer1994/better-auth-asaas</Link>
 
       <nav className="flex items-center gap-2">
         {!session.data?.user && (

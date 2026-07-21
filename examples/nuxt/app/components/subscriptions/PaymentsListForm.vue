@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
-import type { Payment } from 'better-auth-asaas/types'
+import type { Payment } from '@meyer1994/better-auth-asaas/types'
 import { z } from 'zod'
 
 const { $auth } = useNuxtApp()

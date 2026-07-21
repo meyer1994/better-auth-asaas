@@ -28,7 +28,7 @@
     "@vueuse/core": "^14.3.0",
     "@vueuse/nuxt": "^14.3.0",
     "better-auth": "catalog:",
-    "better-auth-asaas": "workspace:*",
+    "@meyer1994/better-auth-asaas": "workspace:*",
     "better-sqlite3": "latest",
     "drizzle-orm": "latest",
     "nuxt": "^4.5.0",

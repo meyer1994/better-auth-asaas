@@ -1,5 +1,5 @@
 {
-  "name": "better-auth-asaas",
+  "name": "@meyer1994/better-auth-asaas",
   "version": "1.0.0",
   "description": "Asaas payments plugin for Better Auth",
   "author": "",
@@ -54,5 +54,8 @@
   "peerDependencies": {
     "better-auth": "^1.6.23",
     "zod": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

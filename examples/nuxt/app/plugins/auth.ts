@@ -1,4 +1,4 @@
-import { asaasClient } from 'better-auth-asaas/client'
+import { asaasClient } from '@meyer1994/better-auth-asaas/client'
 import { inferAdditionalFields } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/vue'
 import type { auth as AuthInstance } from '~~/server/utils/auth'

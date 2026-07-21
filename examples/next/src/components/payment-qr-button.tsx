@@ -1,6 +1,6 @@
 'use client'
 
-import type { PixQrCode } from 'better-auth-asaas/types'
+import type { PixQrCode } from '@meyer1994/better-auth-asaas/types'
 import { useQuery } from '@tanstack/react-query'
 import { Copy, QrCode } from 'lucide-react'
 import Image from 'next/image'

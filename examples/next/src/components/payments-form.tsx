@@ -4,7 +4,7 @@ import { useForm } from '@tanstack/react-form'
 import { Plus } from 'lucide-react'
 import { z } from 'zod'
 
-import type { CreatePayment } from 'better-auth-asaas/types'
+import type { CreatePayment } from '@meyer1994/better-auth-asaas/types'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

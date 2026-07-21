@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { z } from 'zod'
 
-import type { CreateSubscription } from 'better-auth-asaas/types'
+import type { CreateSubscription } from '@meyer1994/better-auth-asaas/types'
 
 
 type Item = Omit<CreateSubscription, 'customer'>

@@ -1,6 +1,6 @@
-# better-auth-asaas - Next.js example
+# @meyer1994/better-auth-asaas - Next.js example
 
-Next.js + shadcn/ui demo of `better-auth-asaas`: sign-up with auto Asaas
+Next.js + shadcn/ui demo of `@meyer1994/better-auth-asaas`: sign-up with auto Asaas
 customer creation, PIX and credit-card charges, subscriptions, payment lookups,
 QR codes, and webhooks.
 

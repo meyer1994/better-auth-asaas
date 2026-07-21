@@ -1,6 +1,6 @@
-# better-auth-asaas - Nuxt example
+# @meyer1994/better-auth-asaas - Nuxt example
 
-Nuxt + Nuxt UI demo of `better-auth-asaas`: sign-up with auto Asaas customer
+Nuxt + Nuxt UI demo of `@meyer1994/better-auth-asaas`: sign-up with auto Asaas customer
 creation, PIX and credit-card charges, subscriptions, payment lookups, QR codes,
 and webhooks.
 

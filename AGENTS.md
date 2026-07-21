@@ -8,7 +8,7 @@
 |-- AGENTS.md                         # agent guide
 |-- CLAUDE.md                         # empty local guide
 |-- better-auth-asaas.code-workspace  # multi-root VS Code workspace
-|-- package.json                      # publishable better-auth-asaas package
+|-- package.json                      # publishable @meyer1994/better-auth-asaas package
 |-- pnpm-workspace.yaml               # pnpm packages (root + examples)
 |-- pnpm-lock.yaml                    # locked deps
 |-- tsconfig.json                     # plugin TS config

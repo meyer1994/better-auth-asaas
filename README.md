@@ -1,4 +1,4 @@
-# better-auth-asaas
+# @meyer1994/better-auth-asaas
 
 [Asaas](https://www.asaas.com/) payments plugin for [Better
 Auth](https://www.better-auth.com/). Auto-creates an Asaas customer on sign-up
@@ -16,7 +16,7 @@ examples/next     # Next demo
 ## Install
 
 ```bash
-pnpm add better-auth-asaas
+pnpm add @meyer1994/better-auth-asaas
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ pnpm add better-auth-asaas
 ```ts
 // auth.ts
 import { betterAuth } from "better-auth";
-import { asaas } from "better-auth-asaas";
+import { asaas } from "@meyer1994/better-auth-asaas";
 
 export const auth = betterAuth({
   plugins: [
@@ -43,7 +43,7 @@ export const auth = betterAuth({
 ```ts
 // auth-client.ts
 import { createAuthClient } from "better-auth/client";
-import { asaasClient } from "better-auth-asaas/client";
+import { asaasClient } from "@meyer1994/better-auth-asaas/client";
 
 export const authClient = createAuthClient({
   plugins: [asaasClient()],

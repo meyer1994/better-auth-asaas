@@ -5,7 +5,7 @@ import { List } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 
-import type { Page, Payment } from 'better-auth-asaas/types'
+import type { Page, Payment } from '@meyer1994/better-auth-asaas/types'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

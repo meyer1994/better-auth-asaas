@@ -4,7 +4,7 @@ import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
-  title: 'better-auth-asaas — Next example',
+  title: '@meyer1994/better-auth-asaas — Next example',
   description: 'Next.js port of the Nuxt example',
 }
 

@@ -1,13 +1,13 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { asaasClient } from 'better-auth-asaas/client'
+import { asaasClient } from '@meyer1994/better-auth-asaas/client'
 import type {
   CreatePayment,
   Page,
   Payment,
   Subscription
-} from 'better-auth-asaas/types'
+} from '@meyer1994/better-auth-asaas/types'
 import { createAuthClient } from 'better-auth/react'
 import type { Session, User } from 'better-auth/types'
 

@@ -3,7 +3,7 @@
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
 
-import type { Page, Subscription } from 'better-auth-asaas/types'
+import type { Page, Subscription } from '@meyer1994/better-auth-asaas/types'
 import type { UseQueryResult } from '@tanstack/react-query'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'

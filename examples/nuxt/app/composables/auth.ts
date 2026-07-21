@@ -1,4 +1,4 @@
-import type { Page, Payment, Subscription } from 'better-auth-asaas/types'
+import type { Page, Payment, Subscription } from '@meyer1994/better-auth-asaas/types'
 
 export const usePayments = () => {
   const { $auth } = useNuxtApp()
