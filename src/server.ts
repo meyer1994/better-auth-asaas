@@ -1,6 +1,27 @@
 import type { BetterAuthPlugin } from "better-auth";
 import { AsaasClient } from "./asaas";
-import { createPayment, createSubscription, getQrCode, listPayments, listSubscriptions } from "./endpoints";
+import {
+  createPayment,
+  createPaymentWithCreditCard,
+  createSubscription,
+  createSubscriptionWithCreditCard,
+  deleteSubscription,
+  getPayment,
+  getPaymentBillingInfo,
+  getPaymentIdentificationField,
+  getPaymentStatus,
+  getPaymentViewingInfo,
+  getQrCode,
+  getSubscription,
+  getSubscriptionPaymentBook,
+  listPayments,
+  listSubscriptionPayments,
+  listSubscriptions,
+  payWithCard,
+  payWithCreditCard,
+  updateSubscription,
+  updateSubscriptionCreditCard,
+} from "./endpoints";
 import { userAfterCreate } from "./hooks";
 import { webhook, type WebhookOptions } from "./webhooks";
 
@@ -18,10 +39,26 @@ export const asaas = <O extends Options>(options: O) => {
 
     endpoints: {
       createpayment: createPayment(client),
+      createPaymentWithCreditCard: createPaymentWithCreditCard(client),
       listpayments: listPayments(client),
+      getPayment: getPayment(client),
+      getPaymentStatus: getPaymentStatus(client),
+      getPaymentIdentificationField: getPaymentIdentificationField(client),
+      getPaymentBillingInfo: getPaymentBillingInfo(client),
+      getPaymentViewingInfo: getPaymentViewingInfo(client),
       qrPayment: getQrCode(client),
+      payWithCard: payWithCard(client),
+      payWithCreditCard: payWithCreditCard(client),
+
       createsubscription: createSubscription(client),
+      createSubscriptionWithCreditCard: createSubscriptionWithCreditCard(client),
       listsubscriptions: listSubscriptions(client),
+      getSubscription: getSubscription(client),
+      updateSubscription: updateSubscription(client),
+      updateSubscriptionCreditCard: updateSubscriptionCreditCard(client),
+      deleteSubscription: deleteSubscription(client),
+      listSubscriptionPayments: listSubscriptionPayments(client),
+      getSubscriptionPaymentBook: getSubscriptionPaymentBook(client),
 
       webhook: webhook({
         client,
