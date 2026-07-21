@@ -1,5 +1,4 @@
-import { createAuthMiddleware } from "@better-auth/core/api";
-import { APIError } from "better-auth/api";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 
 /**
  * Middleware to require a user to have an Asaas customer ID.

@@ -26,9 +26,18 @@ import { userAfterCreate } from "./hooks";
 import { webhook, type WebhookOptions } from "./webhooks";
 
 
+type RateLimitRuleOptions = {
+  max?: number;
+  window?: number;
+};
+
 type Options = Omit<WebhookOptions, "client"> & {
   apiKey: string;
   sandbox?: boolean;
+  rateLimit?: {
+    webhook?: RateLimitRuleOptions;
+    api?: RateLimitRuleOptions;
+  };
 };
 
 export const asaas = <O extends Options>(options: O) => {
@@ -38,21 +47,21 @@ export const asaas = <O extends Options>(options: O) => {
     id: "asaas" as const,
 
     endpoints: {
-      createpayment: createPayment(client),
+      createPayment: createPayment(client),
       createPaymentWithCreditCard: createPaymentWithCreditCard(client),
-      listpayments: listPayments(client),
+      listPayments: listPayments(client),
       getPayment: getPayment(client),
       getPaymentStatus: getPaymentStatus(client),
       getPaymentIdentificationField: getPaymentIdentificationField(client),
       getPaymentBillingInfo: getPaymentBillingInfo(client),
       getPaymentViewingInfo: getPaymentViewingInfo(client),
-      qrPayment: getQrCode(client),
+      getPaymentQrCode: getQrCode(client),
       payWithCard: payWithCard(client),
       payWithCreditCard: payWithCreditCard(client),
 
-      createsubscription: createSubscription(client),
+      createSubscription: createSubscription(client),
       createSubscriptionWithCreditCard: createSubscriptionWithCreditCard(client),
-      listsubscriptions: listSubscriptions(client),
+      listSubscriptions: listSubscriptions(client),
       getSubscription: getSubscription(client),
       updateSubscription: updateSubscription(client),
       updateSubscriptionCreditCard: updateSubscriptionCreditCard(client),
@@ -65,7 +74,7 @@ export const asaas = <O extends Options>(options: O) => {
         webhookAccessToken: options.webhookAccessToken,
 
         onWebhook: options.onWebhook,
-        
+
         onPaymentCreated: options.onPaymentCreated,
         onPaymentAwaitingRiskAnalysis: options.onPaymentAwaitingRiskAnalysis,
         onPaymentApprovedByRiskAnalysis: options.onPaymentApprovedByRiskAnalysis,
@@ -104,6 +113,20 @@ export const asaas = <O extends Options>(options: O) => {
         onSubscriptionSplitDivergenceBlockFinished: options.onSubscriptionSplitDivergenceBlockFinished,
       }),
     },
+
+    rateLimit: [
+      {
+        pathMatcher: (path) => path === "/asaas/webhook",
+        max: options.rateLimit?.webhook?.max ?? 100,
+        window: options.rateLimit?.webhook?.window ?? 60,
+      },
+      {
+        pathMatcher: (path) =>
+          path.startsWith("/asaas/payments/") || path.startsWith("/asaas/subscriptions/"),
+        max: options.rateLimit?.api?.max ?? 30,
+        window: options.rateLimit?.api?.window ?? 60,
+      },
+    ],
 
     init: () => ({
       options: {

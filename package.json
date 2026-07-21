@@ -52,9 +52,7 @@
     "zod": "catalog:"
   },
   "peerDependencies": {
-    "@better-auth/core": "catalog:",
-    "better-auth": "catalog:",
-    "better-call": "catalog:",
-    "zod": "catalog:"
+    "better-auth": "^1.6.23",
+    "zod": "^4.0.0"
   }
 }
