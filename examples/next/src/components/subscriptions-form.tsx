@@ -31,7 +31,11 @@ export function SubscriptionsForm({ onSubmit }: Props) {
   const form = useForm({
     defaultValues: {
       value: 100,
-      nextDueDate: '2026-06-20',
+      nextDueDate: (() => {
+        const tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        return tomorrow.toISOString().slice(0, 10)
+      })(),
       cycle: 'MONTHLY',
       billingType: 'PIX',
       description: 'Test subscription',

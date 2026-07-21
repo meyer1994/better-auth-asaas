@@ -30,9 +30,14 @@ export function PaymentsForm({ onSubmit }: Props) {
   const form = useForm({
     defaultValues: {
       value: 100,
-      dueDate: '2026-06-20',
+      dueDate: (() => {
+        const tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        return tomorrow.toISOString().slice(0, 10)
+      })(),
       billingType: 'PIX',
       description: 'Test payment',
+ 
     } as Item,
 
     validators: {

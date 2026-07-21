@@ -10,7 +10,7 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
 
-  database: drizzleAdapter(db, { provider: 'sqlite', schema, debugLogs: true }),
+  database: drizzleAdapter(db, { provider: 'sqlite', schema, debugLogs: false }),
 
   emailAndPassword: { enabled: true },
 
@@ -19,7 +19,7 @@ export const auth = betterAuth({
       apiKey: process.env.ASAAS_API_KEY!,
       sandbox: process.env.ASAAS_SANDBOX !== 'false',
 
-      onWebhook: e => console.log('Webhook received', e),
+      onWebhook: e => console.log('Webhook received', e.event, e.id),
 
       onPaymentCreated: e => console.log('Payment created', e.payment.id),
       onPaymentReceived: e => console.log('Payment received', e.payment.id),
