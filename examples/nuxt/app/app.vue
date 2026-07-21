@@ -2,7 +2,7 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const { $auth } = useNuxtApp()
-const { data: session, clear } = await $auth.useSession()
+const { data: session, clear } = $auth.useSession()
 
 const items = computed<NavigationMenuItem[]>(() => {
   if (!session.value) {
