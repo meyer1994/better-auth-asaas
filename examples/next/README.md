@@ -1,28 +1,35 @@
 # better-auth-asaas - Next.js example
 
-Next.js 15 + shadcn/ui demo of `better-auth-asaas`: sign-up with auto Asaas
-customer creation, PIX charge creation, subscription creation,
-charge/subscription lists, QR codes, and the webhook receiver.
+Next.js + shadcn/ui demo of `better-auth-asaas`: sign-up with auto Asaas
+customer creation, PIX charges, subscriptions, QR codes, and webhooks.
 
 ## Prerequisites
 
 - Node 18+, pnpm
 - [Asaas sandbox account](https://sandbox.asaas.com) + API key
 
-## Setup
+## Start
 
 ```bash
 # from repo root
 pnpm install
-pnpm run build                   # build the plugin first
+pnpm run build
 
 cd examples/next
-cp .env.example .env             # fill in the values below
-pnpm run db:push                 # create the SQLite schema
-pnpm run dev                     # http://localhost:3000
+cp .env.example .env   # fill in Asaas + Better Auth values
+pnpm run db:push
+pnpm run dev           # http://localhost:3000
+```
+
+Or from the repo root:
+
+```bash
+pnpm --filter better-auth-asaas-example-next dev
 ```
 
 ## Env
+
+Copy `.env.example` to `.env` and set:
 
 | Variable                     | Description                                                 |
 | ---------------------------- | ----------------------------------------------------------- |
@@ -44,7 +51,6 @@ pnpm run dev                     # http://localhost:3000
 
 ## Commands
 
-<<<<<<< HEAD
 | Script                   | Description                                      |
 | ------------------------ | ------------------------------------------------ |
 | `pnpm run dev`           | Start Next dev server                            |
@@ -56,17 +62,6 @@ pnpm run dev                     # http://localhost:3000
 | `pnpm run db:generate`   | Regenerate auth tables + drizzle migration files |
 | `pnpm run db:migrate`    | Run drizzle migrations                           |
 | `pnpm run auth:generate` | Regenerate `src/lib/db/auth.ts` from auth config |
-=======
-| Script               | Description                                          |
-| -------------------- | ---------------------------------------------------- |
-| `pnpm dev`           | Start Next dev server                                |
-| `pnpm build`         | Production build                                     |
-| `pnpm start`         | Run the production build                             |
-| `pnpm typecheck`     | Run `tsc --noEmit`                                   |
-| `pnpm lint`          | Run ESLint                                           |
-| `pnpm db:push`       | Apply the schema to SQLite via drizzle-kit           |
-| `pnpm auth:generate` | Regenerate `src/lib/db/auth.ts` from auth config     |
->>>>>>> bca77fa (examples/next: drop drizzle migrate workflow, push-only)
 
 ## Webhook (local)
 

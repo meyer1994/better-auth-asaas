@@ -1,28 +1,35 @@
 # better-auth-asaas - Nuxt example
 
-Nuxt 4 + Nuxt UI demo of `better-auth-asaas`: sign-up with auto Asaas customer
-creation, PIX charge creation, subscription creation, charge/subscription
-lists, QR codes, and the webhook receiver.
+Nuxt + Nuxt UI demo of `better-auth-asaas`: sign-up with auto Asaas customer
+creation, PIX charges, subscriptions, QR codes, and webhooks.
 
 ## Prerequisites
 
 - Node 18+, pnpm
 - [Asaas sandbox account](https://sandbox.asaas.com) + API key
 
-## Setup
+## Start
 
 ```bash
 # from repo root
 pnpm install
-pnpm run build               # build the plugin first
+pnpm run build
 
 cd examples/nuxt
-touch .env                   # fill in the values below
-pnpm run db:push             # create the SQLite schema
-pnpm run dev                 # http://localhost:3000
+cp .env.example .env   # fill in Asaas + Better Auth values
+pnpm run db:push
+pnpm run dev           # http://localhost:3000
+```
+
+Or from the repo root:
+
+```bash
+pnpm --filter better-auth-asaas-example-nuxt dev
 ```
 
 ## Env
+
+Copy `.env.example` to `.env` and set:
 
 | Variable                     | Description                                                 |
 | ---------------------------- | ----------------------------------------------------------- |
