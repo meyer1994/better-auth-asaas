@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "name": "plugin",
+      "path": "."
+    },
+    {
+      "name": "nuxt",
+      "path": "examples/nuxt"
+    },
+    {
+      "name": "next",
+      "path": "examples/next"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "files.exclude": {
+      "examples": true
+    }
+  }
+}
