@@ -4,38 +4,33 @@
 
 ```text
 .
-|-- README.md                         # repo overview
+|-- README.md                         # plugin docs + repo overview
 |-- AGENTS.md                         # agent guide
 |-- CLAUDE.md                         # empty local guide
-|-- package.json                      # workspace metadata; no root scripts
-|-- pnpm-workspace.yaml               # pnpm packages
+|-- package.json                      # publishable better-auth-asaas package
+|-- pnpm-workspace.yaml               # pnpm packages (root + examples)
 |-- pnpm-lock.yaml                    # locked deps
-|-- tsconfig.json                     # shared TS config
+|-- tsconfig.json                     # plugin TS config
+|-- tsup.config.ts                    # build config
+|-- vitest.config.ts                  # test config
 |-- .mcp.json                         # MCP servers
 |-- .claude/                          # ignored local Claude settings
 |-- .codex/
 |   `-- config.toml                   # Codex MCP config
-|-- packages/
-|   `-- better-auth-asaas/
-|       |-- README.md                 # plugin docs
-|       |-- package.json              # plugin scripts
-|       |-- tsconfig.json             # plugin TS config
-|       |-- tsup.config.ts            # build config
-|       |-- vitest.config.ts          # test config
-|       `-- src/
-|           |-- index.ts              # server export
-|           |-- server.ts             # plugin setup
-|           |-- client.ts             # client plugin
-|           |-- asaas.ts              # Asaas API client
-|           |-- endpoints.ts          # auth endpoints
-|           |-- hooks.ts              # user hooks
-|           |-- middleware.ts         # middleware helpers
-|           |-- types.ts              # public types
-|           |-- webhooks.ts           # webhook dispatch
-|           |-- asaas.test.ts         # Asaas client tests
-|           |-- endpoints.test.ts     # endpoint tests
-|           |-- hooks.test.ts         # hook tests
-|           `-- middleware.test.ts    # middleware tests
+|-- src/
+|   |-- index.ts                      # server export
+|   |-- server.ts                     # plugin setup
+|   |-- client.ts                     # client plugin
+|   |-- asaas.ts                      # Asaas API client
+|   |-- endpoints.ts                  # auth endpoints
+|   |-- hooks.ts                      # user hooks
+|   |-- middleware.ts                 # middleware helpers
+|   |-- types.ts                      # public types
+|   |-- webhooks.ts                   # webhook dispatch
+|   |-- asaas.test.ts                 # Asaas client tests
+|   |-- endpoints.test.ts             # endpoint tests
+|   |-- hooks.test.ts                 # hook tests
+|   `-- middleware.test.ts            # middleware tests
 |-- examples/
 |   |-- nuxt/
 |   |   |-- README.md                 # Nuxt example docs
@@ -81,8 +76,8 @@ with content filters.
 | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | `find . -name "*.ts"`                                                      | Find files by name or extension.                                |
 | `find . -type f -path "*/src/*"`                                           | Find files under matching paths.                                |
-| `grep -rin "pattern" packages/better-auth-asaas/src`                       | Recursive, case-insensitive text search with line numbers.      |
-| `find packages -type f -name "*.ts" -print0 \| xargs -0 grep -n "pattern"` | Search only files selected by `find`.                           |
+| `grep -rin "pattern" src`                                                 | Recursive, case-insensitive text search with line numbers.      |
+| `find src -type f -name "*.ts" -print0 \| xargs -0 grep -n "pattern"`     | Search only files selected by `find`.                           |
 | `grep -rin "payment" . \| grep "asaasCustomerId"`                          | Narrow a broad grep result with a second grep.                  |
 | `tree -a -I "node_modules\|dist\|.nuxt\|.next\|.output\|.git"`             | Quickly inspect directory shape while hiding generated folders. |
 
@@ -105,28 +100,24 @@ Prefer these MCP sources over web search for project-specific framework/API docs
 
 ## Commands
 
-Root workspace:
+Root package (plugin) — run from repo root:
 
-| Command                                                 | Description                 |
-| ------------------------------------------------------- | --------------------------- |
-| `pnpm --filter better-auth-asaas <script>`              | Run a plugin package script |
-| `pnpm --filter better-auth-asaas-example-nuxt <script>` | Run a Nuxt example script   |
-| `pnpm --filter better-auth-asaas-example-next <script>` | Run a Next example script   |
+| Command             | Description      |
+| ------------------- | ---------------- |
+| `pnpm run build`    | Build with tsup  |
+| `pnpm run dev`      | Watch build      |
+| `pnpm run clean`    | Remove artifacts |
+| `pnpm run test`     | Run vitest       |
+| `pnpm run typecheck`| Run TypeScript   |
 
-The root `package.json` currently has no `scripts` block. Use package filters
-instead of root aliases.
+Examples — `cd` into the example, or use a filter from the root:
 
-Plugin package:
+| Command                                                 | Description               |
+| ------------------------------------------------------- | ------------------------- |
+| `pnpm --filter better-auth-asaas-example-nuxt <script>` | Run a Nuxt example script |
+| `pnpm --filter better-auth-asaas-example-next <script>` | Run a Next example script |
 
-| Command                                     | Description      |
-| ------------------------------------------- | ---------------- |
-| `pnpm --filter better-auth-asaas build`     | Build with tsup  |
-| `pnpm --filter better-auth-asaas dev`       | Watch build      |
-| `pnpm --filter better-auth-asaas clean`     | Remove artifacts |
-| `pnpm --filter better-auth-asaas test`      | Run vitest       |
-| `pnpm --filter better-auth-asaas typecheck` | Run TypeScript   |
-
-Nuxt example:
+Nuxt example (`examples/nuxt` or filter above):
 
 | Command                                                      | Description          |
 | ------------------------------------------------------------ | -------------------- |
@@ -141,7 +132,7 @@ Nuxt example:
 | `pnpm --filter better-auth-asaas-example-nuxt db:generate`   | Generate migrations  |
 | `pnpm --filter better-auth-asaas-example-nuxt db:migrate`    | Run migrations       |
 
-Next example:
+Next example (`examples/next` or filter above):
 
 | Command                                                      | Description          |
 | ------------------------------------------------------------ | -------------------- |

@@ -11,11 +11,6 @@ updates:
       interval: weekly
 
   - package-ecosystem: npm
-    directory: /packages/better-auth-asaas
-    schedule:
-      interval: weekly
-
-  - package-ecosystem: npm
     directory: /examples/next
     schedule:
       interval: weekly
