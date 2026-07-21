@@ -117,6 +117,11 @@ if (!session.value) await navigateTo('/login', { replace: true })
         </UCard>
       </UForm>
 
+      <PaymentsCreateCreditCardForm @success="() => refreshPayments()" />
+      <PaymentsPayWithCreditCardForm @success="() => refreshPayments()" />
+      <PaymentsPayWithCardForm @success="() => refreshPayments()" />
+      <PaymentsPaymentLookupForm />
+
       <!-- session card -->
       <UCard class="overflow-x-auto">
         <template #title>
