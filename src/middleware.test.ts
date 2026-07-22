@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { requireAsaasCustomerId } from "./asaas-middleware";
+import { requireAsaasCustomerId } from "./middleware";
 
 const makeCtx = (user?: { email: string; asaasCustomerId?: string }) => ({
   context: {

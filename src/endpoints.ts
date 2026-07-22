@@ -1,68 +1,43 @@
 import { APIError, createAuthEndpoint, sessionMiddleware } from "better-auth/api";
-import * as z from "zod";
 import type { AsaasClient } from "./asaas";
-import { requireAsaasCustomerId } from "./asaas-middleware";
+import { requireAsaasCustomerId } from "./middleware";
 import { upsertPayment, upsertSubscription } from "./sync";
 import type {
-  CreateSubscription,
+  CreateSubscriptionRequest,
+  CreateSubscriptionWithCreditCardResponse,
+  DeleteSubscriptionResponse,
+  GetPaymentBillingInfoResponse,
+  GetPaymentIdentificationFieldResponse,
+  GetPaymentPixQrCodeResponse,
+  GetPaymentStatusResponse,
+  GetPaymentViewingInfoResponse,
+  GetSubscriptionPaymentBookResponse,
   Page,
   Payment,
-  PaymentStatus,
-  PixQrCode,
+  PaymentRequestBillingType,
   Subscription,
+  SubscriptionCycle,
 } from "./types";
-
-type PaymentStatusResponse = { status: PaymentStatus };
-
-type PaymentIdentificationField = {
-  identificationField: string;
-  nossoNumero: string;
-  barCode: string;
-};
-
-type PaymentBillingInfo = {
-  pix?: {
-    encodedImage?: string;
-    payload?: string;
-    expirationDate?: string;
-    description?: string;
-  };
-  creditCard?: {
-    creditCardNumber?: string;
-    creditCardBrand?: string;
-    creditCardToken?: string;
-  };
-  bankSlip?: {
-    identificationField?: string;
-    nossoNumero?: string;
-    barCode?: string;
-    bankSlipUrl?: string;
-    daysAfterDueDateToRegistrationCancellation?: number;
-  };
-};
-
-type PaymentViewingInfo = {
-  invoiceViewedDate?: string;
-  boletoViewedDate?: string;
-};
-
-type SubscriptionDeleteResponse = {
-  deleted: boolean;
-  id: string;
-};
-
-type SubscriptionWithCreditCard = Subscription & {
-  creditCard?: {
-    creditCardNumber?: string;
-    creditCardBrand?: string;
-    creditCardToken?: string;
-  };
-};
-
-type SubscriptionPaymentBook = {
-  contentType: "application/pdf";
-  data: string;
-};
+import {
+  createPaymentSchema,
+  createPaymentWithCreditCardSchema,
+  createSubscriptionSchema,
+  createSubscriptionWithCreditCardSchema,
+  deleteSubscriptionSchema,
+  getPaymentBillingInfoQuerySchema,
+  getPaymentIdentificationFieldQuerySchema,
+  getPaymentQuerySchema,
+  getPaymentStatusQuerySchema,
+  getPaymentViewingInfoQuerySchema,
+  getQrCodeQuerySchema,
+  getSubscriptionQuerySchema,
+  listSubscriptionPaymentsQuerySchema,
+  payWithCardSchema,
+  payWithCreditCardSchema,
+  paymentBookQuerySchema,
+  updateSubscriptionCreditCardSchema,
+  updateSubscriptionSchema,
+} from "./zods";
 
 async function requireOwnedPayment(
   client: AsaasClient,
@@ -96,12 +71,7 @@ export const createPayment = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/create" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      billingType: z.enum(["PIX", /* "BOLETO", "CREDIT_CARD", "UNDEFINED" */]),
-      value: z.number().positive(),
-      dueDate: z.string(),
-      description: z.string().max(256).optional(),
-    }),
+    body: createPaymentSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Payment> => {
@@ -125,39 +95,7 @@ export const createPaymentWithCreditCard = (client: AsaasClient) => createAuthEn
   "/asaas/payments/create-credit-card" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      value: z.number().positive(),
-      dueDate: z.string(),
-      description: z.string().max(500).optional(),
-      installmentCount: z.number().int().positive().optional(),
-      totalValue: z.number().positive().optional(),
-      installmentValue: z.number().positive().optional(),
-      creditCard: z.object({
-        holderName: z.string(),
-        number: z.string(),
-        expiryMonth: z.string(),
-        expiryYear: z.string(),
-        ccv: z.string(),
-      }).optional(),
-      creditCardHolderInfo: z.object({
-        name: z.string(),
-        email: z.string(),
-        cpfCnpj: z.string(),
-        postalCode: z.string(),
-        addressNumber: z.string(),
-        addressComplement: z.string().optional(),
-        phone: z.string(),
-        mobilePhone: z.string().optional(),
-      }).optional(),
-      creditCardToken: z.string().optional(),
-      authorizeOnly: z.boolean().optional(),
-      remoteIp: z.string(),
-    }).refine(
-      (body) =>
-        Boolean(body.creditCardToken) ||
-        (Boolean(body.creditCard) && Boolean(body.creditCardHolderInfo)),
-      { message: "Provide creditCardToken, or both creditCard and creditCardHolderInfo" },
-    ),
+    body: createPaymentWithCreditCardSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Payment> => {
@@ -202,7 +140,7 @@ export const getPayment = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/get" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getPaymentQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Payment> => {
@@ -219,16 +157,16 @@ export const getPaymentStatus = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/status" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getPaymentStatusQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<PaymentStatusResponse> => {
+  async (ctx): Promise<GetPaymentStatusResponse> => {
     await requireOwnedPayment(
       client,
       ctx.query.id,
       ctx.context.session.user.asaasCustomerId,
     );
-    const response = await client.request<PaymentStatusResponse>(
+    const response = await client.request<GetPaymentStatusResponse>(
       `/payments/${ctx.query.id}/status`,
     );
     return ctx.json(response);
@@ -239,16 +177,16 @@ export const getPaymentIdentificationField = (client: AsaasClient) => createAuth
   "/asaas/payments/identification-field" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getPaymentIdentificationFieldQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<PaymentIdentificationField> => {
+  async (ctx): Promise<GetPaymentIdentificationFieldResponse> => {
     await requireOwnedPayment(
       client,
       ctx.query.id,
       ctx.context.session.user.asaasCustomerId,
     );
-    const response = await client.request<PaymentIdentificationField>(
+    const response = await client.request<GetPaymentIdentificationFieldResponse>(
       `/payments/${ctx.query.id}/identificationField`,
     );
     return ctx.json(response);
@@ -259,16 +197,16 @@ export const getPaymentBillingInfo = (client: AsaasClient) => createAuthEndpoint
   "/asaas/payments/billing-info" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getPaymentBillingInfoQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<PaymentBillingInfo> => {
+  async (ctx): Promise<GetPaymentBillingInfoResponse> => {
     await requireOwnedPayment(
       client,
       ctx.query.id,
       ctx.context.session.user.asaasCustomerId,
     );
-    const response = await client.request<PaymentBillingInfo>(
+    const response = await client.request<GetPaymentBillingInfoResponse>(
       `/payments/${ctx.query.id}/billingInfo`,
     );
     return ctx.json(response);
@@ -279,16 +217,16 @@ export const getPaymentViewingInfo = (client: AsaasClient) => createAuthEndpoint
   "/asaas/payments/viewing-info" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getPaymentViewingInfoQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<PaymentViewingInfo> => {
+  async (ctx): Promise<GetPaymentViewingInfoResponse> => {
     await requireOwnedPayment(
       client,
       ctx.query.id,
       ctx.context.session.user.asaasCustomerId,
     );
-    const response = await client.request<PaymentViewingInfo>(
+    const response = await client.request<GetPaymentViewingInfoResponse>(
       `/payments/${ctx.query.id}/viewingInfo`,
     );
     return ctx.json(response);
@@ -299,16 +237,18 @@ export const getQrCode = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/qr" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getQrCodeQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<PixQrCode> => {
+  async (ctx): Promise<GetPaymentPixQrCodeResponse> => {
     await requireOwnedPayment(
       client,
       ctx.query.id,
       ctx.context.session.user.asaasCustomerId,
     );
-    const response = await client.request<PixQrCode>(`/payments/${ctx.query.id}/pixQrCode`);
+    const response = await client.request<GetPaymentPixQrCodeResponse>(
+      `/payments/${ctx.query.id}/pixQrCode`,
+    );
     return ctx.json(response);
   }
 );
@@ -317,39 +257,7 @@ export const payWithCard = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/pay-with-card" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      id: z.string(),
-      cardType: z.enum(["CREDIT", "VOUCHER"]),
-      card: z.object({
-        holderName: z.string(),
-        number: z.string(),
-        expiryMonth: z.string(),
-        expiryYear: z.string(),
-        ccv: z.string(),
-        holder: z.object({
-          name: z.string(),
-          email: z.string(),
-          cpfCnpj: z.string(),
-          postalCode: z.string(),
-          address: z.string().optional(),
-          addressNumber: z.string().optional(),
-          complement: z.string().optional(),
-          province: z.string().optional(),
-          city: z.string().optional(),
-          uf: z.string().optional(),
-          country: z.string().optional(),
-          phone: z.string().optional(),
-          mobilePhone: z.string().optional(),
-        }).refine(
-          (holder) => Boolean(holder.phone) || Boolean(holder.mobilePhone),
-          { message: "Provide phone or mobilePhone" },
-        ),
-      }).optional(),
-      cardToken: z.string().optional(),
-    }).refine(
-      (body) => Boolean(body.cardToken) || Boolean(body.card),
-      { message: "Provide cardToken or card" },
-    ),
+    body: payWithCardSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Payment> => {
@@ -371,32 +279,7 @@ export const payWithCreditCard = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/payments/pay-with-credit-card" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      id: z.string(),
-      creditCard: z.object({
-        holderName: z.string(),
-        number: z.string(),
-        expiryMonth: z.string(),
-        expiryYear: z.string(),
-        ccv: z.string(),
-      }).optional(),
-      creditCardHolderInfo: z.object({
-        name: z.string(),
-        email: z.string(),
-        cpfCnpj: z.string(),
-        postalCode: z.string(),
-        addressNumber: z.string(),
-        addressComplement: z.string().optional(),
-        phone: z.string(),
-        mobilePhone: z.string().optional(),
-      }).optional(),
-      creditCardToken: z.string().optional(),
-    }).refine(
-      (body) =>
-        Boolean(body.creditCardToken) ||
-        (Boolean(body.creditCard) && Boolean(body.creditCardHolderInfo)),
-      { message: "Provide creditCardToken, or both creditCard and creditCardHolderInfo" },
-    ),
+    body: payWithCreditCardSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Payment> => {
@@ -418,40 +301,23 @@ export const createSubscription = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/subscriptions/create" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      billingType: z.enum(["UNDEFINED", "BOLETO", "CREDIT_CARD", "PIX"]),
-      value: z.number().positive(),
-      nextDueDate: z.string(),
-      cycle: z.enum([
-        "WEEKLY",
-        "BIWEEKLY",
-        "MONTHLY",
-        "BIMONTHLY",
-        "QUARTERLY",
-        "SEMIANNUALLY",
-        "YEARLY",
-      ]),
-      description: z.string().max(500).optional(),
-      endDate: z.string().optional(),
-      maxPayments: z.number().int().positive().optional(),
-      externalReference: z.string().optional(),
-    }),
+    body: createSubscriptionSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Subscription> => {
     const response = await client.request<Subscription>("/subscriptions", {
       method: "POST",
       body: JSON.stringify({
-        billingType: ctx.body.billingType,
+        billingType: ctx.body.billingType as PaymentRequestBillingType,
         value: ctx.body.value,
         nextDueDate: ctx.body.nextDueDate,
-        cycle: ctx.body.cycle,
+        cycle: ctx.body.cycle as SubscriptionCycle,
         description: ctx.body.description,
         endDate: ctx.body.endDate,
         maxPayments: ctx.body.maxPayments,
         externalReference: ctx.body.externalReference ?? ctx.context.session.user.id,
         customer: ctx.context.session.user.asaasCustomerId,
-      } satisfies CreateSubscription),
+      } satisfies CreateSubscriptionRequest),
     });
     await upsertSubscription(ctx, response, { userId: ctx.context.session.user.id });
     return ctx.json(response);
@@ -462,51 +328,11 @@ export const createSubscriptionWithCreditCard = (client: AsaasClient) => createA
   "/asaas/subscriptions/create-credit-card" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      value: z.number().positive(),
-      nextDueDate: z.string(),
-      cycle: z.enum([
-        "WEEKLY",
-        "BIWEEKLY",
-        "MONTHLY",
-        "BIMONTHLY",
-        "QUARTERLY",
-        "SEMIANNUALLY",
-        "YEARLY",
-      ]),
-      description: z.string().max(500).optional(),
-      endDate: z.string().optional(),
-      maxPayments: z.number().int().positive().optional(),
-      externalReference: z.string().optional(),
-      creditCard: z.object({
-        holderName: z.string(),
-        number: z.string(),
-        expiryMonth: z.string(),
-        expiryYear: z.string(),
-        ccv: z.string(),
-      }).optional(),
-      creditCardHolderInfo: z.object({
-        name: z.string(),
-        email: z.string(),
-        cpfCnpj: z.string(),
-        postalCode: z.string(),
-        addressNumber: z.string(),
-        addressComplement: z.string().optional(),
-        phone: z.string(),
-        mobilePhone: z.string().optional(),
-      }).optional(),
-      creditCardToken: z.string().optional(),
-      remoteIp: z.string(),
-    }).refine(
-      (body) =>
-        Boolean(body.creditCardToken) ||
-        (Boolean(body.creditCard) && Boolean(body.creditCardHolderInfo)),
-      { message: "Provide creditCardToken, or both creditCard and creditCardHolderInfo" },
-    ),
+    body: createSubscriptionWithCreditCardSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<SubscriptionWithCreditCard> => {
-    const response = await client.request<SubscriptionWithCreditCard>("/subscriptions/", {
+  async (ctx): Promise<CreateSubscriptionWithCreditCardResponse> => {
+    const response = await client.request<CreateSubscriptionWithCreditCardResponse>("/subscriptions/", {
       method: "POST",
       body: JSON.stringify({
         value: ctx.body.value,
@@ -546,7 +372,7 @@ export const getSubscription = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/subscriptions/get" as const,
   {
     method: "GET" as const,
-    query: z.object({ id: z.string() }),
+    query: getSubscriptionQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Subscription> => {
@@ -563,13 +389,7 @@ export const updateSubscription = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/subscriptions/update" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      id: z.string(),
-      description: z.string().max(500).optional(),
-      endDate: z.string().optional(),
-      nextDueDate: z.string().optional(),
-      updatePendingPayments: z.boolean().optional(),
-    }),
+    body: updateSubscriptionSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Subscription> => {
@@ -591,33 +411,7 @@ export const updateSubscriptionCreditCard = (client: AsaasClient) => createAuthE
   "/asaas/subscriptions/update-credit-card" as const,
   {
     method: "POST" as const,
-    body: z.object({
-      id: z.string(),
-      creditCard: z.object({
-        holderName: z.string(),
-        number: z.string(),
-        expiryMonth: z.string(),
-        expiryYear: z.string(),
-        ccv: z.string(),
-      }).optional(),
-      creditCardHolderInfo: z.object({
-        name: z.string(),
-        email: z.string(),
-        cpfCnpj: z.string(),
-        postalCode: z.string(),
-        addressNumber: z.string(),
-        addressComplement: z.string().optional(),
-        phone: z.string(),
-        mobilePhone: z.string().optional(),
-      }).optional(),
-      creditCardToken: z.string().optional(),
-      remoteIp: z.string(),
-    }).refine(
-      (body) =>
-        Boolean(body.creditCardToken) ||
-        (Boolean(body.creditCard) && Boolean(body.creditCardHolderInfo)),
-      { message: "Provide creditCardToken, or both creditCard and creditCardHolderInfo" },
-    ),
+    body: updateSubscriptionCreditCardSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Subscription> => {
@@ -639,16 +433,16 @@ export const deleteSubscription = (client: AsaasClient) => createAuthEndpoint(
   "/asaas/subscriptions/delete" as const,
   {
     method: "POST" as const,
-    body: z.object({ id: z.string() }),
+    body: deleteSubscriptionSchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<SubscriptionDeleteResponse> => {
+  async (ctx): Promise<DeleteSubscriptionResponse> => {
     await requireOwnedSubscription(
       client,
       ctx.body.id,
       ctx.context.session.user.asaasCustomerId,
     );
-    const response = await client.request<SubscriptionDeleteResponse>(
+    const response = await client.request<DeleteSubscriptionResponse>(
       `/subscriptions/${ctx.body.id}`,
       { method: "DELETE" },
     );
@@ -660,25 +454,7 @@ export const listSubscriptionPayments = (client: AsaasClient) => createAuthEndpo
   "/asaas/subscriptions/payments" as const,
   {
     method: "GET" as const,
-    query: z.object({
-      id: z.string(),
-      status: z.enum([
-        "PENDING",
-        "RECEIVED",
-        "CONFIRMED",
-        "OVERDUE",
-        "REFUNDED",
-        "RECEIVED_IN_CASH",
-        "REFUND_REQUESTED",
-        "REFUND_IN_PROGRESS",
-        "CHARGEBACK_REQUESTED",
-        "CHARGEBACK_DISPUTE",
-        "AWAITING_CHARGEBACK_REVERSAL",
-        "DUNNING_REQUESTED",
-        "DUNNING_RECEIVED",
-        "AWAITING_RISK_ANALYSIS",
-      ]).optional(),
-    }),
+    query: listSubscriptionPaymentsQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
   async (ctx): Promise<Page<Payment>> => {
@@ -701,16 +477,10 @@ export const getSubscriptionPaymentBook = (client: AsaasClient) => createAuthEnd
   "/asaas/subscriptions/payment-book" as const,
   {
     method: "GET" as const,
-    query: z.object({
-      id: z.string(),
-      month: z.coerce.number().int().min(1).max(12).optional(),
-      year: z.coerce.number().int().optional(),
-      sort: z.string().optional(),
-      order: z.enum(["asc", "desc"]).optional(),
-    }),
+    query: paymentBookQuerySchema,
     use: [sessionMiddleware, requireAsaasCustomerId],
   },
-  async (ctx): Promise<SubscriptionPaymentBook> => {
+  async (ctx): Promise<GetSubscriptionPaymentBookResponse> => {
     await requireOwnedSubscription(
       client,
       ctx.query.id,
@@ -728,6 +498,6 @@ export const getSubscriptionPaymentBook = (client: AsaasClient) => createAuthEnd
     return ctx.json({
       contentType: "application/pdf",
       data: binary.data,
-    } satisfies SubscriptionPaymentBook);
+    } satisfies GetSubscriptionPaymentBookResponse);
   }
 );

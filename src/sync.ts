@@ -1,9 +1,53 @@
 import type { GenericEndpointContext } from "better-auth";
-import type { Payment, Subscription } from "./types";
+import type { EventType, Payment, Subscription, WebhookEvent } from "./types";
 
 type UpsertOptions = {
   userId: string;
 };
+
+/**
+ * Upsert the top-level fields of a webhook event for idempotent delivery
+ * tracking. Payment and subscription payloads are intentionally excluded.
+ */
+export async function upsertWebhookEvent(
+  ctx: GenericEndpointContext,
+  event: WebhookEvent,
+): Promise<void> {
+  try {
+    const now = new Date();
+    const data = {
+      asaasEventId: event.id,
+      event: event.event as EventType,
+      dateCreated: event.dateCreated,
+      accountId: event.account?.id ?? null,
+      ownerId: event.account?.ownerId ?? null,
+      additionalInfo: event.additionalInfo ?? null,
+      rawPayload: JSON.stringify(event),
+      updatedAt: now,
+    };
+
+    const updated = await ctx.context.adapter.update({
+      model: "asaasWebhook",
+      where: [{ field: "asaasEventId", value: event.id }],
+      update: data,
+    });
+
+    if (updated) return;
+
+    await ctx.context.adapter.create({
+      model: "asaasWebhook",
+      data: {
+        ...data,
+        createdAt: now,
+      },
+    });
+  } catch (error) {
+    ctx.context.logger.error("Failed to upsert webhook event", {
+      asaasEventId: event.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
 
 /**
  * Upsert a local payment row in one query when the row already exists
@@ -27,7 +71,7 @@ export async function upsertPayment(
       dueDate: payment.dueDate,
       paymentDate: payment.paymentDate,
       description: payment.description ?? null,
-      deleted: payment.deleted,
+      deleted: payment.deleted ?? false,
       updatedAt: now,
     };
 
@@ -76,7 +120,7 @@ export async function upsertSubscription(
       nextDueDate: subscription.nextDueDate,
       endDate: subscription.endDate,
       description: subscription.description ?? null,
-      deleted: subscription.deleted,
+      deleted: subscription.deleted ?? false,
       updatedAt: now,
     };
 

@@ -114,11 +114,11 @@ handlers. Subscription handlers include `onSubscriptionCreated`,
 
 ## Schema
 
-Adds fields to the `user` table and two mirror tables (`asaasPayment`,
-`asaasSubscription`). Asaas remains the source of truth for create/list/get API
-calls; local rows are upserted after successful creates and from webhook
-payloads. Run `auth generate` (or your ORM migrate flow) after adding the
-plugin.
+Adds fields to the `user` table and three tables (`asaasPayment`,
+`asaasSubscription`, `asaasWebhook`). Asaas remains the source of truth for
+create/list/get API calls; local rows are upserted after successful creates and
+from webhook payloads. Run `auth generate` (or your ORM migrate flow) after
+adding the plugin.
 
 ### `user`
 
@@ -162,6 +162,23 @@ plugin.
 | `deleted`              | `boolean` | Mirrored from Asaas (`subscription.deleted`). |
 | `createdAt`            | `date`    | Local row created at.                         |
 | `updatedAt`            | `date`    | Local row updated at.                         |
+
+### `asaasWebhook`
+
+Stores the top-level fields of each Asaas webhook event. The Asaas event ID is
+unique, so repeated deliveries update the existing row.
+
+| Field            | Type      | Notes                               |
+| ---------------- | --------- | ----------------------------------- |
+| `asaasEventId`   | `string`  | Unique Asaas webhook event id.      |
+| `event`          | `string`  | Asaas event type.                   |
+| `dateCreated`    | `string`  | Asaas event creation timestamp.     |
+| `accountId`      | `string?` | Asaas account id, when provided.    |
+| `ownerId`        | `string?` | Parent account id, when provided.   |
+| `additionalInfo` | `string?` | Additional Asaas event information. |
+| `rawPayload`     | `string`  | JSON string of the complete event.  |
+| `createdAt`      | `date`    | Local row created at.               |
+| `updatedAt`      | `date`    | Local row updated at.               |
 
 ## Commands
 

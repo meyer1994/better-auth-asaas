@@ -1,7 +1,8 @@
-import { APIError, createAuthEndpoint } from "better-auth/api";
+import { createAuthEndpoint } from "better-auth/api";
 import type { AsaasClient } from "./asaas";
-import { upsertPayment, upsertSubscription } from "./sync";
-import type { Event, EventType, Payment, Subscription } from "./types";
+import { requireWebhookAccessToken } from "./middleware";
+import { upsertPayment, upsertSubscription, upsertWebhookEvent } from "./sync";
+import type { Event, EventType, Payment, Subscription, WebhookEvent } from "./types";
 
 export interface WebhookOptions {
   client: AsaasClient;
@@ -35,6 +36,7 @@ export interface WebhookOptions {
   onPaymentBankSlipCancelled?: (event: Event<Payment, "PAYMENT_BANK_SLIP_CANCELLED">) => Promise<unknown> | unknown;
   onPaymentBankSlipViewed?: (event: Event<Payment, "PAYMENT_BANK_SLIP_VIEWED">) => Promise<unknown> | unknown;
   onPaymentCheckoutViewed?: (event: Event<Payment, "PAYMENT_CHECKOUT_VIEWED">) => Promise<unknown> | unknown;
+  onPaymentSplitCancelled?: (event: Event<Payment, "PAYMENT_SPLIT_CANCELLED">) => Promise<unknown> | unknown;
   onPaymentSplitDivergenceBlock?: (event: Event<Payment, "PAYMENT_SPLIT_DIVERGENCE_BLOCK">) => Promise<unknown> | unknown;
   onPaymentSplitDivergenceBlockFinished?: (event: Event<Payment, "PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED">) => Promise<unknown> | unknown;
 
@@ -52,29 +54,19 @@ export const webhook = (opts: WebhookOptions) =>
     "/asaas/webhook" as const,
     {
       method: "POST" as const,
-      use: [],
+      use: [requireWebhookAccessToken(opts.webhookAccessToken)],
     },
     async (ctx): Promise<{ success: boolean }> => {
-      const token = ctx.headers?.get("asaas-access-token");
-      if (!token) {
-        throw new APIError("UNAUTHORIZED", {
-          message: "Missing asaas-access-token header",
-        });
-      }
-
-      if (token !== opts.webhookAccessToken) {
-        throw new APIError("UNAUTHORIZED", {
-          message: "Invalid webhook access token",
-        });
-      }
-
       const event = ctx.body as Event<Payment | Subscription, EventType>;
+      await upsertWebhookEvent(ctx, event as WebhookEvent);
 
       if ("payment" in event && event.payment) {
         const payment = event.payment as Payment;
         if (payment.externalReference) {
           const options = { userId: payment.externalReference };
-          upsertPayment(ctx, payment, options).catch(e => console.error(e));
+          upsertPayment(ctx, payment, options)
+            .then(() => console.log("Payment upserted", payment.id))
+            .catch(e => console.error(e));
         }
       }
 
@@ -82,7 +74,9 @@ export const webhook = (opts: WebhookOptions) =>
         const subscription = event.subscription as Subscription;
         if (subscription.externalReference) {
           const options = { userId: subscription.externalReference };
-          upsertSubscription(ctx, subscription, options).catch(e => console.error(e));
+          upsertSubscription(ctx, subscription, options)
+            .then(() => console.log("Subscription upserted", subscription.id))
+            .catch(e => console.error(e));
         }
       }
 
@@ -167,6 +161,9 @@ export const webhook = (opts: WebhookOptions) =>
           break;
         case "PAYMENT_CHECKOUT_VIEWED":
           promises.push(opts.onPaymentCheckoutViewed?.(event as Event<Payment, "PAYMENT_CHECKOUT_VIEWED">));
+          break;
+        case "PAYMENT_SPLIT_CANCELLED":
+          promises.push(opts.onPaymentSplitCancelled?.(event as Event<Payment, "PAYMENT_SPLIT_CANCELLED">));
           break;
         case "PAYMENT_SPLIT_DIVERGENCE_BLOCK":
           promises.push(opts.onPaymentSplitDivergenceBlock?.(event as Event<Payment, "PAYMENT_SPLIT_DIVERGENCE_BLOCK">));

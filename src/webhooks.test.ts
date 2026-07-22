@@ -39,7 +39,7 @@ const makePaymentDeletedEvent = (): Event<Payment, "PAYMENT_DELETED"> =>
       status: "DELETED",
       deleted: false,
     },
-  }) as Event<Payment, "PAYMENT_DELETED">;
+  }) as unknown as Event<Payment, "PAYMENT_DELETED">;
 
 const makeSubscriptionEvent = (): Event<Subscription, "SUBSCRIPTION_CREATED"> =>
   ({
@@ -95,6 +95,7 @@ describe("webhook", () => {
 
     await expect(endpoint(makeContext() as never)).rejects.toMatchObject({
       status: "UNAUTHORIZED",
+      body: { message: "Missing asaas-access-token header" },
     });
   });
 
@@ -113,6 +114,7 @@ describe("webhook", () => {
       ),
     ).rejects.toMatchObject({
       status: "UNAUTHORIZED",
+      body: { message: "Invalid webhook access token" },
     });
   });
 
@@ -147,6 +149,39 @@ describe("webhook", () => {
         data: expect.objectContaining({
           asaasPaymentId: "pay_123",
           userId: "user_123",
+        }),
+      }),
+    );
+  });
+
+  it("stores the top-level webhook event", async () => {
+    const endpoint = webhook({
+      client,
+      webhookAccessToken: TOKEN,
+    });
+    const event = {
+      ...makePaymentEvent(),
+      account: { id: "acc_123", ownerId: "owner_123" },
+      additionalInfo: "split divergence",
+    };
+    const ctx = makeContext(
+      event,
+      new Headers({ "asaas-access-token": TOKEN }),
+    );
+
+    await endpoint(ctx as never);
+
+    expect(ctx.context.adapter.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: "asaasWebhook",
+        data: expect.objectContaining({
+          asaasEventId: "evt_123",
+          event: "PAYMENT_CREATED",
+          dateCreated: "2026-06-05 12:00:00",
+          accountId: "acc_123",
+          ownerId: "owner_123",
+          additionalInfo: "split divergence",
+          rawPayload: JSON.stringify(event),
         }),
       }),
     );
@@ -213,7 +248,12 @@ describe("webhook", () => {
         }),
       }),
     );
-    expect(adapter.create).not.toHaveBeenCalled();
+    expect(adapter.update).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "asaasWebhook" }),
+    );
+    expect(adapter.create).not.toHaveBeenCalledWith(
+      expect.objectContaining({ model: "asaasPayment" }),
+    );
   });
 
   it("still acknowledges the webhook when local sync fails", async () => {

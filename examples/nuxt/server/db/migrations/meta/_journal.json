@@ -15,6 +15,13 @@
       "when": 1784672698968,
       "tag": "0001_old_tattoo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784679159998,
+      "tag": "0002_grey_greymalkin",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,22 @@
 import { APIError, createAuthMiddleware } from "better-auth/api";
 
+export const requireWebhookAccessToken = (webhookAccessToken: string) =>
+  createAuthMiddleware(async ctx => {
+    const token = ctx.headers?.get("asaas-access-token");
+
+    if (!token) {
+      throw new APIError("UNAUTHORIZED", {
+        message: "Missing asaas-access-token header",
+      });
+    }
+
+    if (token !== webhookAccessToken) {
+      throw new APIError("UNAUTHORIZED", {
+        message: "Invalid webhook access token",
+      });
+    }
+  });
+
 /**
  * Middleware to require a user to have an Asaas customer ID.
  * 

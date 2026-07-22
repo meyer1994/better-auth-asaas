@@ -62,7 +62,7 @@ describe("asaas plugin", () => {
     ].sort());
   });
 
-  it("declares asaasPayment and asaasSubscription tables in the plugin schema", () => {
+  it("declares payment, subscription, and webhook tables in the plugin schema", () => {
     expect(plugin.schema).toMatchObject({
       user: {
         fields: {
@@ -87,6 +87,17 @@ describe("asaas plugin", () => {
           asaasSubscriptionId: expect.objectContaining({ unique: true }),
           status: expect.any(Object),
           cycle: expect.any(Object),
+        },
+      },
+      asaasWebhook: {
+        fields: {
+          asaasEventId: expect.objectContaining({ unique: true }),
+          event: expect.any(Object),
+          dateCreated: expect.any(Object),
+          accountId: expect.any(Object),
+          ownerId: expect.any(Object),
+          additionalInfo: expect.any(Object),
+          rawPayload: expect.any(Object),
         },
       },
     });

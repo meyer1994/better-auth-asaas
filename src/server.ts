@@ -101,6 +101,7 @@ export const asaas = <O extends Options>(options: O) => {
         onPaymentBankSlipCancelled: options.onPaymentBankSlipCancelled,
         onPaymentBankSlipViewed: options.onPaymentBankSlipViewed,
         onPaymentCheckoutViewed: options.onPaymentCheckoutViewed,
+        onPaymentSplitCancelled: options.onPaymentSplitCancelled,
         onPaymentSplitDivergenceBlock: options.onPaymentSplitDivergenceBlock,
         onPaymentSplitDivergenceBlockFinished: options.onPaymentSplitDivergenceBlockFinished,
 
@@ -111,7 +112,7 @@ export const asaas = <O extends Options>(options: O) => {
         onSubscriptionSplitDisabled: options.onSubscriptionSplitDisabled,
         onSubscriptionSplitDivergenceBlock: options.onSubscriptionSplitDivergenceBlock,
         onSubscriptionSplitDivergenceBlockFinished: options.onSubscriptionSplitDivergenceBlockFinished,
-      }),
+      } satisfies WebhookOptions),
     },
 
     rateLimit: [
@@ -270,6 +271,47 @@ export const asaas = <O extends Options>(options: O) => {
             type: "boolean",
             required: true,
             defaultValue: false,
+          },
+          createdAt: {
+            type: "date",
+            required: true,
+          },
+          updatedAt: {
+            type: "date",
+            required: true,
+          },
+        },
+      },
+      asaasWebhook: {
+        fields: {
+          asaasEventId: {
+            type: "string",
+            required: true,
+            unique: true,
+          },
+          event: {
+            type: "string",
+            required: true,
+          },
+          dateCreated: {
+            type: "string",
+            required: true,
+          },
+          accountId: {
+            type: "string",
+            required: false,
+          },
+          ownerId: {
+            type: "string",
+            required: false,
+          },
+          additionalInfo: {
+            type: "string",
+            required: false,
+          },
+          rawPayload: {
+            type: "string",
+            required: true,
           },
           createdAt: {
             type: "date",

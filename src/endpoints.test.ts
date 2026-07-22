@@ -21,7 +21,7 @@ import {
   updateSubscription,
   updateSubscriptionCreditCard,
 } from "./endpoints";
-import { requireAsaasCustomerId } from "./asaas-middleware";
+import { requireAsaasCustomerId } from "./middleware";
 import type { Page, Payment, PixQrCode, Subscription } from "./types";
 import { AsaasClient } from "./asaas";
 

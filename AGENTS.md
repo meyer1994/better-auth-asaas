@@ -26,14 +26,14 @@
 |   |-- asaas.ts                      # Asaas API client
 |   |-- endpoints.ts                  # auth endpoints
 |   |-- hooks.ts                      # user hooks
-|   |-- asaas-middleware.ts           # auth middleware helpers
+|   |-- middleware.ts                 # auth middleware helpers
 |   |-- types.ts                      # public types
 |   |-- webhooks.ts                   # webhook dispatch
 |   |-- sync.ts                       # local payment/subscription upserts
 |   |-- asaas.test.ts                 # Asaas client tests
 |   |-- endpoints.test.ts             # endpoint tests
 |   |-- hooks.test.ts                 # hook tests
-|   |-- asaas-middleware.test.ts      # middleware tests
+|   |-- middleware.test.ts            # middleware tests
 |   |-- webhooks.test.ts              # webhook tests
 |   `-- sync.test.ts                  # sync helper tests
 |-- examples/
