@@ -36,6 +36,10 @@
     "./types": {
       "types": "./dist/types.d.ts",
       "default": "./dist/types.js"
+    },
+    "./zods": {
+      "types": "./dist/zods.d.ts",
+      "default": "./dist/zods.js"
     }
   },
   "devDependencies": {
