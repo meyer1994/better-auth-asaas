@@ -60,13 +60,15 @@ export const webhook = (opts: WebhookOptions) =>
       const event = ctx.body as Event<Payment | Subscription, EventType>;
       await upsertWebhookEvent(ctx, event as WebhookEvent);
 
+      const promises = [];
+
       if ("payment" in event && event.payment) {
         const payment = event.payment as Payment;
         if (payment.externalReference) {
           const options = { userId: payment.externalReference };
-          upsertPayment(ctx, payment, options)
+          promises.push(upsertPayment(ctx, payment, options)
             .then(() => console.log("Payment upserted", payment.id))
-            .catch(e => console.error(e));
+            .catch(e => console.error(e)));
         }
       }
 
@@ -74,13 +76,12 @@ export const webhook = (opts: WebhookOptions) =>
         const subscription = event.subscription as Subscription;
         if (subscription.externalReference) {
           const options = { userId: subscription.externalReference };
-          upsertSubscription(ctx, subscription, options)
+          promises.push(upsertSubscription(ctx, subscription, options)
             .then(() => console.log("Subscription upserted", subscription.id))
-            .catch(e => console.error(e));
+            .catch(e => console.error(e)));
         }
       }
 
-      const promises = [];
       promises.push(opts.onWebhook?.(event));
 
       switch (event.event) {
