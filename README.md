@@ -4,7 +4,8 @@
 Auth](https://www.better-auth.com/). Auto-creates an Asaas customer on sign-up
 and exposes endpoints for PIX and credit-card charges, subscriptions, payment
 lookups, QR codes, and webhook dispatch. Local `asaas_payment` and
-`asaas_subscription` tables mirror create/webhook state while Asaas remains the
+`asaas_subscription` tables mirror payment/subscription state, while
+`asaas_webhook` stores webhook deliveries and raw payloads. Asaas remains the
 source of truth.
 
 ## Layout
@@ -20,6 +21,21 @@ examples/next     # Next demo
 ```bash
 pnpm add @meyer1994/better-auth-asaas
 ```
+
+## Public exports
+
+The package exposes the plugin, client plugin, public Asaas types, and reusable
+Zod schemas through separate entry points:
+
+```ts
+import { asaas } from "@meyer1994/better-auth-asaas";
+import { asaasClient } from "@meyer1994/better-auth-asaas/client";
+import type { Payment, Subscription } from "@meyer1994/better-auth-asaas/types";
+import { createPaymentSchema } from "@meyer1994/better-auth-asaas/zods";
+```
+
+Use the `types` export for response and request DTOs and the `zods` export for
+endpoint validation schemas shared by server and client applications.
 
 ## Usage
 
@@ -117,8 +133,9 @@ handlers. Subscription handlers include `onSubscriptionCreated`,
 Adds fields to the `user` table and three tables (`asaasPayment`,
 `asaasSubscription`, `asaasWebhook`). Asaas remains the source of truth for
 create/list/get API calls; local rows are upserted after successful creates and
-from webhook payloads. Run `auth generate` (or your ORM migrate flow) after
-adding the plugin.
+from webhook payloads. The `asaasWebhook` table stores top-level webhook data
+and the raw payload for idempotency and delivery inspection. Run `auth generate`
+(or your ORM migrate flow) after adding the plugin.
 
 ### `user`
 

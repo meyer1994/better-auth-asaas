@@ -81,3 +81,8 @@ In Asaas -> **Configuracoes -> Webhooks**:
 - Access token: value of `ASAAS_WEBHOOK_ACCESS_TOKEN`
 
 Webhook handlers are configured in `server/utils/auth.ts`.
+
+The local schema includes an `asaas_webhook` table. It stores each webhook's
+top-level fields and raw payload, keyed by the unique Asaas event ID. Run
+`pnpm run db:push` or `pnpm run db:migrate` after generating the schema to apply
+the table.
