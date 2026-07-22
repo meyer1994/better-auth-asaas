@@ -3,6 +3,7 @@
 import { useForm } from '@tanstack/react-form'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { getPaymentQuerySchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -16,9 +17,8 @@ type Props = {
   onLookup: (action: LookupAction, id: string) => Promise<unknown>
 }
 
-const schema = z.object({
-  id: z.string().min(1),
-})
+const schema = getPaymentQuerySchema.extend({ id: getPaymentQuerySchema.shape.id.min(1) })
+type FormValues = z.infer<typeof schema>
 
 export function PaymentLookupForm({ onLookup }: Props) {
   const [result, setResult] = useState<unknown>(null)
@@ -28,7 +28,7 @@ export function PaymentLookupForm({ onLookup }: Props) {
   const form = useForm({
     defaultValues: {
       id: '',
-    },
+    } satisfies FormValues,
     validators: {
       onSubmit: schema,
     },

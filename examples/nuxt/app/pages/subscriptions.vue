@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import type { Subscription } from '@meyer1994/better-auth-asaas/types'
+import { createSubscriptionSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 const { $auth } = useNuxtApp()
 const toast = useToast()
 
-const schema = z.object({
+const schema = createSubscriptionSchema.extend({
   value: z.number().positive('Must be > 0'),
   nextDueDate: z.iso.date(),
   cycle: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'BIMONTHLY', 'QUARTERLY', 'SEMIANNUALLY', 'YEARLY']).default('MONTHLY'),
   billingType: z.enum(['UNDEFINED', 'BOLETO', 'CREDIT_CARD', 'PIX']).default('PIX'),
-  description: z.string().optional(),
 })
 
 const state = reactive<z.infer<typeof schema>>({

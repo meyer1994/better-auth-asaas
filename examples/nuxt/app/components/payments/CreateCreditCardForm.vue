@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { createPaymentWithCreditCardSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 const emit = defineEmits<{ success: [] }>()
@@ -7,10 +8,9 @@ const emit = defineEmits<{ success: [] }>()
 const { $auth } = useNuxtApp()
 const toast = useToast()
 
-const schema = z.object({
+const schema = createPaymentWithCreditCardSchema.safeExtend({
   value: z.number().positive('Must be > 0'),
   dueDate: z.iso.date(),
-  description: z.string().optional(),
   creditCardToken: z.string().min(1, 'Required'),
   remoteIp: z.string().min(1),
 })

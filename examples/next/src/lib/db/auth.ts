@@ -127,6 +127,19 @@ export const asaasSubscription = sqliteTable("asaas_subscription", {
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 });
 
+export const asaasWebhook = sqliteTable("asaas_webhook", {
+  id: text("id").primaryKey(),
+  asaasEventId: text("asaas_event_id").notNull().unique(),
+  event: text("event").notNull(),
+  dateCreated: text("date_created").notNull(),
+  accountId: text("account_id"),
+  ownerId: text("owner_id"),
+  additionalInfo: text("additional_info"),
+  rawPayload: text("raw_payload").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),

@@ -2,16 +2,16 @@
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import { UseClipboard } from '@vueuse/components'
 import type { Payment } from '@meyer1994/better-auth-asaas/types'
+import { createPaymentSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 const { $auth } = useNuxtApp()
 const toast = useToast()
 
-const schema = z.object({
+const schema = createPaymentSchema.extend({
   value: z.number().positive('Must be > 0'),
   dueDate: z.iso.date(),
   billingType: z.enum(['PIX']).default('PIX'),
-  description: z.string().optional(),
 })
 
 const state = reactive<z.infer<typeof schema>>({

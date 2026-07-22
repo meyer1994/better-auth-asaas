@@ -2,6 +2,7 @@
 
 import { useForm } from '@tanstack/react-form'
 import { Plus } from 'lucide-react'
+import { createPaymentWithCreditCardSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -9,25 +10,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type Item = {
-  value: number
-  dueDate: string
-  remoteIp: string
-  creditCardToken: string
-  description?: string
-}
+const schema = createPaymentWithCreditCardSchema.safeExtend({
+  dueDate: createPaymentWithCreditCardSchema.shape.dueDate.min(1),
+  remoteIp: createPaymentWithCreditCardSchema.shape.remoteIp.min(1),
+  creditCardToken: createPaymentWithCreditCardSchema.shape.creditCardToken.unwrap().min(1),
+})
+type Item = z.infer<typeof schema>
 
 type Props = {
   onSubmit: (values: Item) => Promise<unknown> | unknown
 }
-
-const schema = z.object({
-  value: z.number().positive(),
-  dueDate: z.string().min(1),
-  remoteIp: z.string().min(1),
-  creditCardToken: z.string().min(1),
-  description: z.string().optional(),
-}) satisfies z.ZodType<Item>
 
 export function PaymentsCreditCardForm({ onSubmit }: Props) {
   const form = useForm({

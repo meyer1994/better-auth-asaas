@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
+import { paymentBookQuerySchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 const { $auth } = useNuxtApp()
 const toast = useToast()
 
-const schema = z.object({
+const schema = paymentBookQuerySchema.extend({
   id: z.string().min(1, 'Required'),
-  month: z.number().int().min(1).max(12).optional(),
-  year: z.number().int().optional(),
 })
 
-const state = reactive<{
-  id: string
-  month?: number
-  year?: number
-}>({
+const state = reactive<z.infer<typeof schema>>({
   id: '',
   month: undefined,
   year: undefined,

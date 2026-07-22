@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import type { Payment } from '@meyer1994/better-auth-asaas/types'
+import { listSubscriptionPaymentsQuerySchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 const { $auth } = useNuxtApp()
@@ -23,12 +24,11 @@ const statusOptions = [
   'AWAITING_RISK_ANALYSIS',
 ] as const
 
-const schema = z.object({
+const schema = listSubscriptionPaymentsQuerySchema.extend({
   id: z.string().min(1, 'Required'),
-  status: z.enum(statusOptions).optional(),
 })
 
-const state = reactive<{ id: string, status?: typeof statusOptions[number] | undefined }>({
+const state = reactive<z.infer<typeof schema>>({
   id: '',
   status: undefined,
 })

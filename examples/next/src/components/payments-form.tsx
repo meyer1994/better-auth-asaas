@@ -2,9 +2,9 @@
 
 import { useForm } from '@tanstack/react-form'
 import { Plus } from 'lucide-react'
-import { z } from 'zod'
 
-import type { CreatePayment } from '@meyer1994/better-auth-asaas/types'
+import { createPaymentSchema } from '@meyer1994/better-auth-asaas/zods'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,19 +12,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-type Item = Omit<CreatePayment, 'customer'>
-
 type Props = {
   onSubmit: (values: Item) => Promise<unknown> | unknown
 }
 
-const schema = z.object({
-  value: z.number().positive(),
-  dueDate: z.string(),
-  billingType: z.literal('PIX'),
-  description: z.string().optional(),
+const schema = createPaymentSchema.extend({
+  dueDate: createPaymentSchema.shape.dueDate.min(1),
   externalReference: z.string().optional(),
-}) satisfies z.ZodType<Item>
+})
+type Item = z.infer<typeof schema>
 
 export function PaymentsForm({ onSubmit }: Props) {
   const form = useForm({

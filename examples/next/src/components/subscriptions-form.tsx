@@ -2,30 +2,22 @@
 
 import { useForm } from '@tanstack/react-form'
 import { Plus } from 'lucide-react'
+import { createSubscriptionSchema } from '@meyer1994/better-auth-asaas/zods'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { z } from 'zod'
-
-import type { CreateSubscription } from '@meyer1994/better-auth-asaas/types'
-
-
-type Item = Omit<CreateSubscription, 'customer'>
-
 type Props = {
   onSubmit: (val: Item) => Promise<unknown> | unknown
 }
 
-const schema = z.object({
-  value: z.number().positive(),
-  nextDueDate: z.string(),
-  cycle: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'BIMONTHLY', 'QUARTERLY', 'SEMIANNUALLY', 'YEARLY']),
-  billingType: z.enum(['UNDEFINED', 'BOLETO', 'CREDIT_CARD', 'PIX']),
-  description: z.string().optional(),
-}) satisfies z.ZodType<Item>
+const schema = createSubscriptionSchema.extend({
+  nextDueDate: createSubscriptionSchema.shape.nextDueDate.min(1),
+})
+type Item = z.infer<typeof schema>
 
 export function SubscriptionsForm({ onSubmit }: Props) {
   const form = useForm({

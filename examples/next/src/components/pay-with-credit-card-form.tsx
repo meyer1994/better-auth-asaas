@@ -4,6 +4,7 @@ import { useForm } from '@tanstack/react-form'
 import { CreditCard } from 'lucide-react'
 import { z } from 'zod'
 
+import { payWithCardSchema, payWithCreditCardSchema } from '@meyer1994/better-auth-asaas/zods'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,23 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 type Mode = 'payWithCreditCard' | 'payWithCard'
 
-type Item = {
-  mode: Mode
-  id: string
-  token: string
-}
-
-type PayWithCreditCardValues = {
+type PayWithCreditCardValues = z.infer<typeof payWithCreditCardSchema> & {
   mode: 'payWithCreditCard'
-  id: string
-  creditCardToken: string
 }
 
-type PayWithCardValues = {
+type PayWithCardValues = z.infer<typeof payWithCardSchema> & {
   mode: 'payWithCard'
-  id: string
-  cardType: 'CREDIT'
-  cardToken: string
 }
 
 export type PayWithCardFormValues = PayWithCreditCardValues | PayWithCardValues
@@ -41,7 +31,16 @@ const schema = z.object({
   mode: z.enum(['payWithCreditCard', 'payWithCard']),
   id: z.string().min(1),
   token: z.string().min(1),
-}) satisfies z.ZodType<Item>
+}).superRefine((value, context) => {
+  const result = value.mode === 'payWithCard'
+    ? payWithCardSchema.safeParse({ id: value.id, cardType: 'CREDIT', cardToken: value.token })
+    : payWithCreditCardSchema.safeParse({ id: value.id, creditCardToken: value.token })
+
+  if (!result.success) {
+    context.addIssue({ code: 'custom', path: ['token'], message: result.error.issues[0]?.message ?? 'Invalid token' })
+  }
+})
+type Item = z.infer<typeof schema>
 
 export function PayWithCreditCardForm({ onSubmit }: Props) {
   const form = useForm({

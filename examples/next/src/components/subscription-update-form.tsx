@@ -2,6 +2,7 @@
 
 import { useForm } from '@tanstack/react-form'
 import { Pencil } from 'lucide-react'
+import { updateSubscriptionSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -10,33 +11,19 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-type FormValues = {
-  id: string
-  description: string
-  endDate: string
-  nextDueDate: string
-  updatePendingPayments: '' | 'true' | 'false'
-}
-
-type SubmitValues = {
-  id: string
-  description?: string
-  endDate?: string
-  nextDueDate?: string
-  updatePendingPayments?: boolean
-}
-
-type Props = {
-  onSubmit: (values: SubmitValues) => Promise<unknown> | unknown
-}
-
-const schema = z.object({
-  id: z.string().min(1),
+const schema = updateSubscriptionSchema.extend({
+  id: updateSubscriptionSchema.shape.id.min(1),
   description: z.string(),
   endDate: z.string(),
   nextDueDate: z.string(),
   updatePendingPayments: z.enum(['', 'true', 'false']),
-}) satisfies z.ZodType<FormValues>
+})
+type FormValues = z.infer<typeof schema>
+type SubmitValues = z.infer<typeof updateSubscriptionSchema>
+
+type Props = {
+  onSubmit: (values: SubmitValues) => Promise<unknown> | unknown
+}
 
 export function SubscriptionUpdateForm({ onSubmit }: Props) {
   const form = useForm({

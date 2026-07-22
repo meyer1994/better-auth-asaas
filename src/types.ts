@@ -594,7 +594,7 @@ export interface CreatePaymentWithCreditCardRequest {
   creditCardToken?: string | null;
   authorizeOnly?: boolean | null;
 }
-export interface CreatePaymentWithCreditCardResponse extends Payment {}
+export type CreatePaymentWithCreditCardResponse = Payment
 
 export interface ListPaymentsRequest {
   offset?: number | null;
@@ -623,12 +623,12 @@ export interface ListPaymentsRequest {
   user?: string | null;
   checkoutSession?: string | null;
 }
-export interface ListPaymentsResponse extends Page<Payment> {}
+export type ListPaymentsResponse = Page<Payment>
 
 export interface GetPaymentRequest {
   id: string;
 }
-export interface GetPaymentResponse extends Payment {}
+export type GetPaymentResponse = Payment
 
 export interface GetPaymentStatusRequest {
   id: string;
@@ -699,7 +699,7 @@ export interface PayWithCardRequest {
   card?: PaymentCard | null;
   cardToken?: string | null;
 }
-export interface PayWithCardResponse extends Payment {}
+export type PayWithCardResponse = Payment
 
 export interface PayWithCreditCardRequest {
   id: string;
@@ -707,7 +707,7 @@ export interface PayWithCreditCardRequest {
   creditCardHolderInfo: CreditCardHolderInfoRequest;
   creditCardToken?: string | null;
 }
-export interface PayWithCreditCardResponse extends Payment {}
+export type PayWithCreditCardResponse = Payment
 
 // ---------------------------------------------------------------------------
 // Subscription endpoints
@@ -729,7 +729,7 @@ export interface CreateSubscriptionRequest {
   split?: SubscriptionSplitRequest[] | null;
   callback?: PaymentCallbackRequest | null;
 }
-export interface CreateSubscriptionResponse extends Subscription {}
+export type CreateSubscriptionResponse = Subscription
 /** @deprecated Prefer CreateSubscriptionRequest */
 export type CreateSubscription = CreateSubscriptionRequest;
 
@@ -753,7 +753,7 @@ export interface CreateSubscriptionWithCreditCardRequest {
   creditCardHolderInfo: CreditCardHolderInfoRequest;
   creditCardToken?: string | null;
 }
-export interface CreateSubscriptionWithCreditCardResponse extends Subscription {}
+export type CreateSubscriptionWithCreditCardResponse = Subscription
 
 export interface ListSubscriptionsRequest {
   offset?: number | null;
@@ -768,12 +768,12 @@ export interface ListSubscriptionsRequest {
   order?: string | null;
   sort?: string | null;
 }
-export interface ListSubscriptionsResponse extends Page<Subscription> {}
+export type ListSubscriptionsResponse = Page<Subscription>
 
 export interface GetSubscriptionRequest {
   id: string;
 }
-export interface GetSubscriptionResponse extends Subscription {}
+export type GetSubscriptionResponse = Subscription
 
 export interface UpdateSubscriptionRequest {
   id: string;
@@ -791,7 +791,7 @@ export interface UpdateSubscriptionRequest {
   split?: SubscriptionSplitRequest[] | null;
   callback?: PaymentCallbackRequest | null;
 }
-export interface UpdateSubscriptionResponse extends Subscription {}
+export type UpdateSubscriptionResponse = Subscription
 
 export interface UpdateSubscriptionCreditCardRequest {
   id: string;
@@ -800,7 +800,7 @@ export interface UpdateSubscriptionCreditCardRequest {
   creditCardHolderInfo?: CreditCardHolderInfoRequest | null;
   creditCardToken?: string | null;
 }
-export interface UpdateSubscriptionCreditCardResponse extends Subscription {}
+export type UpdateSubscriptionCreditCardResponse = Subscription
 
 export interface DeleteSubscriptionRequest {
   id: string;
@@ -814,7 +814,7 @@ export interface ListSubscriptionPaymentsRequest {
   id: string;
   status?: PaymentStatus | null;
 }
-export interface ListSubscriptionPaymentsResponse extends Page<Payment> {}
+export type ListSubscriptionPaymentsResponse = Page<Payment>
 
 export interface GetSubscriptionPaymentBookRequest {
   id: string;

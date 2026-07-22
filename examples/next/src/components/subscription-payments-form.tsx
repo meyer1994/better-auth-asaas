@@ -3,9 +3,10 @@
 import { useForm } from '@tanstack/react-form'
 import { List } from 'lucide-react'
 import { useState } from 'react'
-import { z } from 'zod'
 
 import type { Page, Payment } from '@meyer1994/better-auth-asaas/types'
+import { listSubscriptionPaymentsQuerySchema } from '@meyer1994/better-auth-asaas/zods'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,22 +34,16 @@ const STATUS_OPTIONS = [
 
 type SubscriptionPaymentStatus = (typeof STATUS_OPTIONS)[number]
 
-type Item = {
-  id: string
-  status: SubscriptionPaymentStatus | ''
-}
+const schema = listSubscriptionPaymentsQuerySchema.required({ status: true }).extend({
+  id: listSubscriptionPaymentsQuerySchema.shape.id.min(1),
+  status: z.union([listSubscriptionPaymentsQuerySchema.shape.status.unwrap(), z.literal('')]),
+})
+type Item = z.infer<typeof schema>
+type SubmitValues = Omit<Item, 'status'> & { status?: SubscriptionPaymentStatus }
 
 type Props = {
-  onSubmit: (values: {
-    id: string
-    status?: SubscriptionPaymentStatus
-  }) => Promise<Page<Payment> | unknown>
+  onSubmit: (values: SubmitValues) => Promise<Page<Payment> | unknown>
 }
-
-const schema = z.object({
-  id: z.string().min(1),
-  status: z.union([z.enum(STATUS_OPTIONS), z.literal('')]),
-}) satisfies z.ZodType<Item>
 
 export function SubscriptionPaymentsForm({ onSubmit }: Props) {
   const [result, setResult] = useState<Page<Payment> | null>(null)

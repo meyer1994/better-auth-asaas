@@ -2,6 +2,7 @@
 
 import { useForm } from '@tanstack/react-form'
 import { Plus } from 'lucide-react'
+import { createSubscriptionWithCreditCardSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -10,29 +11,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-type Cycle = 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'BIMONTHLY' | 'QUARTERLY' | 'SEMIANNUALLY' | 'YEARLY'
+type Cycle = z.infer<typeof createSubscriptionWithCreditCardSchema>['cycle']
 
-type Item = {
-  value: number
-  nextDueDate: string
-  cycle: Cycle
-  remoteIp: string
-  creditCardToken: string
-  description?: string
-}
+const schema = createSubscriptionWithCreditCardSchema.safeExtend({
+  nextDueDate: createSubscriptionWithCreditCardSchema.shape.nextDueDate.min(1),
+  remoteIp: createSubscriptionWithCreditCardSchema.shape.remoteIp.min(1),
+  creditCardToken: createSubscriptionWithCreditCardSchema.shape.creditCardToken.unwrap().min(1),
+})
+type Item = z.infer<typeof schema>
 
 type Props = {
   onSubmit: (values: Item) => Promise<unknown> | unknown
 }
-
-const schema = z.object({
-  value: z.number().positive(),
-  nextDueDate: z.string().min(1),
-  cycle: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'BIMONTHLY', 'QUARTERLY', 'SEMIANNUALLY', 'YEARLY']),
-  remoteIp: z.string().min(1),
-  creditCardToken: z.string().min(1),
-  description: z.string().optional(),
-}) satisfies z.ZodType<Item>
 
 export function SubscriptionsCreditCardForm({ onSubmit }: Props) {
   const form = useForm({

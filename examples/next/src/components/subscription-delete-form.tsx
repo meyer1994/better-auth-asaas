@@ -2,6 +2,7 @@
 
 import { useForm } from '@tanstack/react-form'
 import { Trash2 } from 'lucide-react'
+import { deleteSubscriptionSchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -9,17 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-type Item = {
-  id: string
-}
+const schema = deleteSubscriptionSchema.extend({ id: deleteSubscriptionSchema.shape.id.min(1) })
+type Item = z.infer<typeof schema>
 
 type Props = {
   onSubmit: (values: Item) => Promise<unknown> | unknown
 }
-
-const schema = z.object({
-  id: z.string().min(1),
-}) satisfies z.ZodType<Item>
 
 export function SubscriptionDeleteForm({ onSubmit }: Props) {
   const form = useForm({

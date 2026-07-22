@@ -3,6 +3,7 @@
 import { useForm } from '@tanstack/react-form'
 import { FileDown } from 'lucide-react'
 import { useState } from 'react'
+import { paymentBookQuerySchema } from '@meyer1994/better-auth-asaas/zods'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -15,25 +16,17 @@ type PaymentBook = {
   data: string
 }
 
-type Item = {
-  id: string
-  month?: string
-  year?: string
-}
-
-type Props = {
-  onSubmit: (values: {
-    id: string
-    month?: number
-    year?: number
-  }) => Promise<PaymentBook | unknown>
-}
-
-const schema = z.object({
-  id: z.string().min(1),
+const schema = paymentBookQuerySchema.extend({
+  id: paymentBookQuerySchema.shape.id.min(1),
   month: z.string().optional(),
   year: z.string().optional(),
 })
+type Item = z.infer<typeof schema>
+type SubmitValues = z.infer<typeof paymentBookQuerySchema>
+
+type Props = {
+  onSubmit: (values: SubmitValues) => Promise<PaymentBook | unknown>
+}
 
 export function SubscriptionPaymentBookForm({ onSubmit }: Props) {
   const [pdfHref, setPdfHref] = useState<string | null>(null)
@@ -102,7 +95,7 @@ export function SubscriptionPaymentBookForm({ onSubmit }: Props) {
                 <Label htmlFor={field.name}>Subscription ID</Label>
                 <Input
                   id={field.name}
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                   placeholder="sub_..."
@@ -120,7 +113,7 @@ export function SubscriptionPaymentBookForm({ onSubmit }: Props) {
                   type="number"
                   min={1}
                   max={12}
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                   placeholder="1–12"
@@ -136,7 +129,7 @@ export function SubscriptionPaymentBookForm({ onSubmit }: Props) {
                 <Input
                   id={field.name}
                   type="number"
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
                   placeholder="2026"
