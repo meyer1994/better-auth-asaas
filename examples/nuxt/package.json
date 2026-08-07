@@ -31,7 +31,7 @@
     "@meyer1994/better-auth-asaas": "workspace:*",
     "better-sqlite3": "latest",
     "drizzle-orm": "latest",
-    "nuxt": "^4.5.0",
+    "nuxt": "^4.5.1",
     "tailwindcss": "^4.3.3",
     "vue": "^3.5.40",
     "zod": "catalog:"
